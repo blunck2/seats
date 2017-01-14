@@ -1,7 +1,5 @@
 package seats.utils;
 
-import org.apache.commons.math3.analysis.function.Floor;
-
 import static seats.common.Messages.*;
 
 
@@ -18,11 +16,18 @@ public class SeatUtils {
    * row.  The middle seat is determined to be the mathematical floor
    * of the rowSeatCount divided by 2.
    * @param rowSeatCount the number of seats in the row
+   * @throws IllegalArgumentException if a 0 or negative rowSeatCount is provided
    */
   public static int calculateCenterSeat(int rowSeatCount) {
-    float exactCenterSeat = Float.valueOf(((float) rowSeatCount) / 2);
-    Double adjustedCenterSeat = Math.floor(exactCenterSeat);
-    return adjustedCenterSeat.intValue();
+    // row sizes of 0 or negative are not supported
+    if (rowSeatCount < 1) {
+      throw new IllegalArgumentException(ROW_SEAT_COUNT_MUST_BE_GREATER_THAN_ZERO);
+    }
+
+    int mod = rowSeatCount % 2;
+    int center = (rowSeatCount / 2) + mod;
+
+    return center;
   }
 
   
@@ -32,22 +37,41 @@ public class SeatUtils {
    * @param rowSeatCount the number of seats in the row
    * @param centerRowSeatCount the number of seats in the row that are
    * considered center row
+   * @throws IllegalArgumentException if negative or 0 values are
+   * passed as arguments or if more seats are considered center row
+   * than are actually in the row
    */
   public static int calculateMinimumCenterSeat(int rowSeatCount,
                                                int centerRowSeatCount) {
+    /*
+     * throw an exception if there are more center row seats than
+     * there are seats in the row
+     */
     if (rowSeatCount < centerRowSeatCount) {
       throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE);
     }
 
-    // locate the middle seat
-    int middleSeat = calculateCenterSeat(rowSeatCount);
+    /*
+     * throw an exception if there are not any seats in the row that
+     * are considered center
+     */
+    if (centerRowSeatCount == 0) {
+      throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_MUST_BE_GREATER_THAN_ZERO);
+    }
 
-    // calculate the exact minimum seat
-    float exactMinimumSeat = Float.valueOf(((float) middleSeat) / 2);
-    Double adjustedMinimumSeat = Math.floor(exactMinimumSeat);
+    /*
+     * calculate the minimum center row seat by subtracting the 
+     * seat count that is considered "center row" from the overall
+     * seat count for the row.  this produces how many seats are
+     * considered "non center row".  div that amount by 2 and add 
+     * the value to the first seat in order to determine the first
+     * seat considered to be "center row"
+     */
+    int nonCenterRowSeatCount = rowSeatCount - centerRowSeatCount;
+    int splitNonCenterRowSeatCount = nonCenterRowSeatCount / 2;
+    int minimumCenterRowSeat = 1 + splitNonCenterRowSeatCount;
 
-    // return the seat that was partially occupied
-    return adjustedMinimumSeat.intValue();    
+    return minimumCenterRowSeat;
   }
 
   
