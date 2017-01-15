@@ -18,4 +18,6 @@ public class Messages {
 
   public static String ROW_NUMBER_DOES_NOT_EXIST = "row number does not exist";
 
+  public static String SEAT_IS_NOT_HELD_OR_RESERVED = "seat is not held or reserved";
+
 }

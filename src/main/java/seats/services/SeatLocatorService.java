@@ -23,7 +23,8 @@ public interface SeatLocatorService {
    * @throws InsufficientAvailableSeatsException if more seats are
    * requested than are currently available
    */
-  List<Seat> locateSeats(int numSeats) throws InsufficientAvailableSeatsException;
+  public List<Seat> locateSeats(int numSeats)
+    throws InsufficientAvailableSeatsException;
 
     
 }

@@ -65,4 +65,34 @@ public class Venue {
    */
   public int getRowCount() { return rows.size(); }
 
+
+  /**
+   * Holds a seat in the venue
+   * @param rowNumber the row number of the seat
+   * @param seatNumber the seat number in the row
+   * @param customerEmailAddress the email address for the customer
+   * holding the seat
+   * @throws IllegalArgumentException if the seat does not exist
+   * @throws SeatUnavailableException if the seat is not open
+   */
+  public void holdSeat(int rowNumber, int seatNumber, String customerEmailAddress)
+    throws SeatUnavailableException {
+
+    // if the row number is 0 or negative throw an exception
+    if (rowNumber <= 0) {
+      throw new IllegalArgumentException(ROW_NUMBERS_MUST_BE_GREATER_THAN_OR_EQUAL_TO_ONE);
+    }
+
+    // if the row number is greater than the number of rows in the venue throw an exception
+    if (rowNumber > rows.size()) {
+      throw new IllegalArgumentException(ROW_NUMBER_DOES_NOT_EXIST);
+    }
+
+    
+    
+    
+      
+
+  }
+
 }

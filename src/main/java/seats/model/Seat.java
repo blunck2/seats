@@ -48,6 +48,9 @@ public class Seat {
   // set to true to indicate the seat is reserved
   private boolean isReserved = false;
 
+  // the email address of the customer who has held or reserved the seat
+  private String customerEmailAddress;
+
 
   /**
    * Creates a Seat
@@ -136,5 +139,34 @@ public class Seat {
    * Reserves the seat 
    */
   public void reserve() { this.isReserved = true; }
+
+  
+  /**
+   * Returns true if the Seat has not been held or reserved
+   */
+  public boolean isOpen() {
+    return (!isHeld() && !isReserved());
+  }
+
+
+  /**
+   * Returns the email address for the customer who has held or
+   * reserved the seat, null otherwise.
+   */
+  public String getCustomerEmailAddress() { return customerEmailAddress; }
+
+  /**
+   * Sets the email address for the customer who has held or reserved
+   * the seat.  
+   * @throws IllegalArgumentException if the seat is open
+   */
+  public void setCustomerEmailAddress(String customerEmailAddress) {
+    if (isOpen()) {
+      throw new IllegalArgumentException(SEAT_IS_NOT_HELD_OR_RESERVED);
+    }
+        
+    this.customerEmailAddress = customerEmailAddress;
+  }
+  
   
 }
