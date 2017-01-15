@@ -55,7 +55,7 @@ public class SeatUtils {
      * throw an exception if there are not any seats in the row that
      * are considered center
      */
-    if (centerRowSeatCount == 0) {
+    if (centerRowSeatCount <= 0) {
       throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_MUST_BE_GREATER_THAN_ZERO);
     }
 
@@ -96,7 +96,7 @@ public class SeatUtils {
      * throw an exception if there are not any seats in the row that
      * are considered center
      */
-    if (centerRowSeatCount == 0) {
+    if (centerRowSeatCount <= 0) {
       throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_MUST_BE_GREATER_THAN_ZERO);
     }
 
