@@ -22,10 +22,6 @@ import java.lang.IllegalArgumentException;
  * maximum rowNumber is bounded by Integer.MAX_VALUE.  As the row
  * number of a seat increases it's value decreases.  
  * </p>
- *
- * <p>
- * 
- * </p>
  */
 public class Seat {
   // the location of the seat in relation to distance from the stage
@@ -33,12 +29,6 @@ public class Seat {
 
   // the location of the seat in relation to the entry aisle
   private int seatNumber;
-
-  // set to true to indicate the seat adjoins the aisle
-  private boolean isAisleSeat;
-
-  // set the true if the seat is considered in "the center row"
-  private boolean isCenterRow;
 
 
   /**
@@ -68,45 +58,4 @@ public class Seat {
   public void setSeatNumber(int seatNumber) { this.seatNumber = seatNumber; }
 
   
-  /**
-   * Returns true if the seat is an aisle seat, false otherwise
-   * 
-   * @param rowLength the number of seats in the row
-   */
-  public boolean isAisleSeat(int rowSeatCount) {
-    return (seatNumber == 1) || (seatNumber == rowSeatCount);
-  }
-
-  
-  /**
-   * Returns true if this seat is considered center row, false otherwise
-   * 
-   * @param centerRowSeatCount the number of seats in the middle of
-   * the row that are considered center row
-   * @param rowSeatCount the number of seats in the row
-   * @throws IllegalArgumentException if the centerRowSeatCount
-   * exceeds the rowSeatCount
-   */
-  public boolean isCenterRow(int centerRowSeatCount, int rowSeatCount) {    
-    /*
-     * ensure the number of seats that are identified as "center row" is
-     * less than or equal to the total number of seats in the row.
-     */
-    if (rowSeatCount <= centerRowSeatCount) {
-      throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE);
-    }
-
-    // locate the middle seat
-    int centerSeat = SeatUtils.calculateCenterSeat(rowSeatCount);
-
-    // identify min and max seats to be considered center row
-    //    int minCenterRowSeatNumber = centerSeat 
-     
-    
-    //    return (seatNumber >
-
-    return true;
-  
-  }
-
 }

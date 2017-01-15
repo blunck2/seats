@@ -133,10 +133,6 @@ public class SeatUtilsTest {
     result = SeatUtils.calculateMinimumCenterSeat(9, 1);
     assertEquals("failed to identify minimum center seat", 5, result);
 
-    // verify we calculate properly for 9 seat row with 1 center row seats
-    result = SeatUtils.calculateMinimumCenterSeat(9, 1);
-    assertEquals("failed to identify minimum center seat", 5, result);
-
     // verify we calculate properly for 9 seat row with 2 center row seats
     result = SeatUtils.calculateMinimumCenterSeat(9, 2);
     assertEquals("failed to identify minimum center seat", 4, result);
@@ -168,6 +164,119 @@ public class SeatUtilsTest {
     // verify we calculate properly for 9 seat row with 9 center row seats
     result = SeatUtils.calculateMinimumCenterSeat(9, 9);
     assertEquals("failed to identify minimum center seat", 1, result);
-    
   }
+
+
+  @Test
+  public void testCalculateMaximumCenterSeat() {
+    // verify that negative seat numbers cannot be used
+    int result = 0;
+    try {
+      result = SeatUtils.calculateMaximumCenterSeat(-1, 2);
+      fail("calculated maximum center of row that has negative seat count");
+    } catch (IllegalArgumentException e) {
+      // do nothing;  this is what we expect to happen
+    }
+
+    // verify that a row with 0 seats cannot be used
+    try {
+      result = SeatUtils.calculateMaximumCenterSeat(0, 2);
+      fail("calculated maximum center of row that has 0 seats");
+    } catch (IllegalArgumentException e) {
+      // do nothing;  this is what we expect to happen
+    }
+    
+    // verify that a row with 0 seats and 0 centerRowSeatCount cannot be used
+    try {
+      result = SeatUtils.calculateMaximumCenterSeat(0, 0);
+      fail("calculated maximum center of row that has 0 seats");
+    } catch (IllegalArgumentException e) {
+      // do nothing;  this is what we expect to happen
+    }
+
+    // verify that a 0 size centerRowSeatCount cannot be used
+    try {
+      result = SeatUtils.calculateMaximumCenterSeat(2, 0);
+      fail("calculated maximum center of row that has 0 center row seats");
+    } catch (IllegalArgumentException e) {
+      // do nothing;  this is what we expect to happen
+    }
+
+    // verify we calculate properly for 1 seat row
+    result = SeatUtils.calculateMaximumCenterSeat(1, 1);
+    assertEquals("failed to identify maximum center seat", 1, result);
+
+    // verify we calculate properly for 2 seat row
+    result = SeatUtils.calculateMaximumCenterSeat(2, 1);
+    assertEquals("failed to identify maximum center seat", 1, result);
+
+    // verify we calculate properly for 3 seat row with 1 center row seat
+    result = SeatUtils.calculateMaximumCenterSeat(3, 1);
+    assertEquals("failed to identify maximum center seat", 2, result);
+
+    // verify we calculate properly for 3 seat row with 2 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(3, 2);
+    assertEquals("failed to identify maximum center seat", 2, result);
+
+    // verify we calculate properly for 3 seat row with 3 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(3, 3);
+    assertEquals("failed to identify maximum center seat", 3, result);
+
+    // verify we calculate properly for 4 seat row with 1 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(4, 1);
+    assertEquals("failed to identify maximum center seat", 2, result);
+
+    // verify we calculate properly for 4 seat row with 2 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(4, 2);
+    assertEquals("failed to identify maximum center seat", 3, result);
+
+    // verify we calculate properly for 4 seat row with 3 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(4, 3);
+    assertEquals("failed to identify maximum center seat", 3, result);
+
+    // verify we calculate properly for 4 seat row with 3 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(4, 4);
+    assertEquals("failed to identify maximum center seat", 4, result);
+
+    // verify we calculate properly for 9 seat row with 1 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 1);
+    assertEquals("failed to identify maximum center seat", 5, result);
+
+    // verify we calculate properly for 9 seat row with 1 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 1);
+    assertEquals("failed to identify maximum center seat", 5, result);
+
+    // verify we calculate properly for 9 seat row with 2 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 2);
+    assertEquals("failed to identify maximum center seat", 5, result);
+
+    // verify we calculate properly for 9 seat row with 3 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 3);
+    assertEquals("failed to identify maximum center seat", 6, result);
+
+    // verify we calculate properly for 9 seat row with 4 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 4);
+    assertEquals("failed to identify maximum center seat", 6, result);
+
+    // verify we calculate properly for 9 seat row with 5 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 5);
+    assertEquals("failed to identify maximum center seat", 7, result);
+
+    // verify we calculate properly for 9 seat row with 6 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 6);
+    assertEquals("failed to identify maximum center seat", 7, result);
+
+    // verify we calculate properly for 9 seat row with 7 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 7);
+    assertEquals("failed to identify maximum center seat", 8, result);
+
+    // verify we calculate properly for 9 seat row with 8 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 8);
+    assertEquals("failed to identify maximum center seat", 8, result);
+
+    // verify we calculate properly for 9 seat row with 9 center row seats
+    result = SeatUtils.calculateMaximumCenterSeat(9, 9);
+    assertEquals("failed to identify maximum center seat", 9, result);
+  }
+  
 }

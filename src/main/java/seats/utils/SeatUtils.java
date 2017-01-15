@@ -84,68 +84,41 @@ public class SeatUtils {
    */
   public static int calculateMaximumCenterSeat(int rowSeatCount,
                                                int centerRowSeatCount) {
+    /*
+     * throw an exception if there are more center row seats than
+     * there are seats in the row
+     */
     if (rowSeatCount < centerRowSeatCount) {
       throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE);
     }
 
-    // locate the middle seat
-    int middleSeat = calculateCenterSeat(rowSeatCount);
+    /*
+     * throw an exception if there are not any seats in the row that
+     * are considered center
+     */
+    if (centerRowSeatCount == 0) {
+      throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_MUST_BE_GREATER_THAN_ZERO);
+    }
 
-    // calculate the exact maximum seat
-    float exactMaximumSeat = Float.valueOf(((float) middleSeat) / 2);
-    Double adjustedMaximumSeat = Math.ceil(exactMaximumSeat);
+    /*
+     * if only 1 seat is considered center row then the maximum center
+     * row seat is the same as the minimum center row seat
+     */
+    if (centerRowSeatCount == 1) {
+      return calculateMinimumCenterSeat(rowSeatCount, centerRowSeatCount);
+    }
 
-    // return the seat that was partially occupied
-    return adjustedMaximumSeat.intValue();    
+    /*
+     * to calculate the maximum center row seat first locate the minimum 
+     * center row seat and then add the number of seats considered to be
+     * center row
+     */
+    int minimumCenterRowSeat = calculateMinimumCenterSeat(rowSeatCount, centerRowSeatCount);
+    int maximumCenterRowSeat = minimumCenterRowSeat + centerRowSeatCount - 1;
+
+    return maximumCenterRowSeat;
   }
   
 
-
-  /**
-   * Returns the first seat in the row that is considered to be "center row"
-   *
-   * @param rowSeatCount the number of seats in the row
-   * @param centerRowSeatCount the number of seats in the row
-   * considered to be "center row"
-   */ 
-  public static int calculateMinimumCenterRowSeatNumber(int rowSeatCount,
-                                                        int centerRowSeatCount) {
-    if (rowSeatCount < centerRowSeatCount) {
-      throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE);
-    }
-    
-    // locate the center seat
-    int centerSeat = calculateCenterSeat(rowSeatCount);
-
-    // calculate the left hand side of the seats
-    int minimumCenterSeat = calculateMinimumCenterSeat(rowSeatCount, centerRowSeatCount);
-
-    // return the seat location
-    return minimumCenterSeat;
-  }
-
-
-  /**
-   * Returns the last seat in the row that is considered to be "center row"
-   *
-   * @param rowSeatCount the number of seats in the row
-   * @param centerRowSeatCount the number of seats in the row
-   * considered to be "center row"
-   */ 
-  public static int calculateMaximumCenterRowSeatNumber(int rowSeatCount,
-                                                        int centerRowSeatCount) {
-    if (rowSeatCount < centerRowSeatCount) {
-      throw new IllegalArgumentException(CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE);
-    }
-    
-    // locate the center seat
-    int centerSeat = calculateCenterSeat(rowSeatCount);
-
-    // calculate the right hand side of the seats
-    int maximumCenterSeat = calculateMaximumCenterSeat(rowSeatCount, centerRowSeatCount);
-
-    // return the seat location
-    return maximumCenterSeat;
-  }
 
 }
