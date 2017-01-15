@@ -16,4 +16,6 @@ public class Messages {
 
   public static String ROW_NUMBERS_MUST_BE_GREATER_THAN_OR_EQUAL_TO_ONE = "row numbers must be >= 1";
 
+  public static String ROW_NUMBER_DOES_NOT_EXIST = "row number does not exist";
+
 }

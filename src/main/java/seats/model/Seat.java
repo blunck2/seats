@@ -30,6 +30,18 @@ public class Seat {
   // the location of the seat in relation to the entry aisle
   private int seatNumber;
 
+  // set to true to indicate this seat is an aisle seat
+  private boolean isAisleSeat = false;
+
+  // set to true to indicate this seat is considered "center row"
+  private boolean isCenterRow = false;
+
+  /*
+   * set to true to indicate this seat is considered to be exactly in
+   * the center of the row
+   */
+  private boolean isCenterSeat = false;
+
 
   /**
    * Creates a Seat
@@ -57,5 +69,43 @@ public class Seat {
    */
   public void setSeatNumber(int seatNumber) { this.seatNumber = seatNumber; }
 
+  
+  /**
+   * Returns true if this seat is considered an aisle seat
+   */
+  public boolean isAisleSeat() { return isAisleSeat; }
+
+  /**
+   * Sets the isAisleSeat flag
+   */ 
+  public void setAisleSeat(boolean isAisleSeat) {
+    this.isAisleSeat = isAisleSeat;
+  }
+
+  
+  /**
+   * Returns true if this seat is considered part of the "center row"
+   */
+  public boolean isCenterRow() { return isCenterRow; }
+
+  /**
+   * Sets the isCenterRow flag
+   */
+  public void setCenterRow(boolean isCenterRow) {
+    this.isCenterRow = isCenterRow;
+  }
+
+
+  /**
+   * Returns true if this seat is considered the center of the row
+   */
+  public boolean isCenterSeat() { return isCenterSeat; }
+
+  /**
+   * Sets the isCenterSeat flag
+   */
+  public void setCenterSeat(boolean isCenterSeat) {
+    this.isCenterSeat = isCenterSeat;
+  }
   
 }

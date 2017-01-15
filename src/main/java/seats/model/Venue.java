@@ -1,6 +1,7 @@
 package seats.model;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 
 import static seats.common.Messages.*;
@@ -36,13 +37,37 @@ public class Venue {
   /**
    * Creates a Venue
    */
-  public Venue() { }
+  public Venue() {
+    seatsByRow = new HashMap<>();
+  }
 
   
   /**
    * Returns the seats indexed by their row number
    */
   public Map<Integer, List<Seat>> getSeatsByRow() { return seatsByRow; }
+
+  /**
+   * Returns the seats in the row requested.
+   * @throws IllegalArgumentException if the row is negative, 0, or
+   * greater than the number of rows in the venue.
+   */
+  public List<Seat> getSeatsByRow(int row) {
+    // throw an exception if the request is for row 0 or is negative
+    if (row < 1) {
+      throw new IllegalArgumentException(ROW_NUMBERS_MUST_BE_GREATER_THAN_OR_EQUAL_TO_ONE);
+    }
+
+    /*
+     * throw an exception if the request is for a row that is larger than
+     * the number of rows in the venue
+     */
+    if (row > rowCount) {
+      throw new IllegalArgumentException(ROW_NUMBER_DOES_NOT_EXIST);
+    }
+
+    return seatsByRow.get(row);
+  }
 
   /**
    * Sets the seats indexed by their row number
