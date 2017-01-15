@@ -12,4 +12,8 @@ public class Messages {
 
   public static String CENTER_ROW_SEAT_COUNT_EXCEEDS_ROW_SIZE = "center row seat count exceeds row size";
 
+  public static String EMPTY_VENUE_NOT_PERMITTED = "unable to create a venue without seats or rows";
+
+  public static String ROW_NUMBERS_MUST_BE_GREATER_THAN_OR_EQUAL_TO_ONE = "row numbers must be >= 1";
+
 }
