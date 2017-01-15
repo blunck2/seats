@@ -32,19 +32,16 @@ public class VenueFactory {
    */
   public static Venue createVenue(int rowCount,
                                   int rowSeatCount,
-                                  int centerRowSize) {
+                                  int centerRowSeatCount) {
     if ((rowCount < 1) || (rowSeatCount < 1)) {
       throw new IllegalArgumentException(EMPTY_VENUE_NOT_PERMITTED);
     }
 
     Venue venue = new Venue();
-    venue.setRowCount(rowCount);
-    venue.setRowSeatCount(rowSeatCount);
-    venue.setCenterRowSize(centerRowSize);
 
     for (int rowNumber = 1; rowNumber <= rowCount; rowNumber++) {
-      List<Seat> seats = SeatFactory.createSeatsForRow(rowNumber, rowSeatCount);
-      venue.addSeatsForRow(rowNumber, seats);
+      Row row = RowFactory.createRow(rowNumber, rowSeatCount, centerRowSeatCount);
+      venue.addRow(row);
     }
     
     return venue;

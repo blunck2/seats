@@ -45,34 +45,29 @@ public class VenueFactoryTest {
      * verify you can create a venue with rows and seats but none that
      * are considered to be center row
      */
-    venue = VenueFactory.createVenue(10, 5, 0);
+    venue = VenueFactory.createVenue(10, 5, 2);
     assertNotNull("failed to create valid venue", venue);
     assertEquals("invalid row count", 10, venue.getRowCount());
     try {
-      List<Seat> seats = venue.getSeatsByRow(-1);
+      Row row = venue.getRow(-1);
       fail("retrieved negative row");
     } catch (IllegalArgumentException e) {
       // do nothing; this is what we expect to have happen
     }
     try {
-      List<Seat> seats = venue.getSeatsByRow(0);
-      fail("retrieved negative row");
+      Row row = venue.getRow(0);
+      fail("retrieved zero row");
     } catch (IllegalArgumentException e) {
       // do nothing; this is what we expect to have happen
     }
     try {
-      List<Seat> seats = venue.getSeatsByRow(100);
-      fail("retrieved negative row");
+      Row row = venue.getRow(100);
+      fail("retrieved non-existent row");
     } catch (IllegalArgumentException e) {
       // do nothing; this is what we expect to have happen
     }
-    List<Seat> seats = venue.getSeatsByRow(1);
-    assertEquals("invalid seat count", 5, seats.size());
-
-    // verify the seats are correct
-    for (Seat seat : seats) {
-      assertNotNull("null seat", seat);
-    }
+    Row row = venue.getRow(1);
+    assertNotNull("row not created", row);
 
     
   }

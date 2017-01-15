@@ -121,7 +121,5 @@ public class RowFactoryTest {
       }
     }
     assertEquals("center seat not flagged", 1, totalCenterSeats);
-    
-    
   }
 }
