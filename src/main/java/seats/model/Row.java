@@ -7,6 +7,11 @@ import java.util.List;
  * <p>
  * Representation of a series of Seats within the venue.
  * </p>
+ *
+ * <p>
+ * Rows with lower row numbers are considered more favorable as they
+ * are closer to the stage.
+ * </p>
  */
 public class Row {
   // the numerical id of the row

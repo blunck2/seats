@@ -68,8 +68,7 @@ public class VenueFactoryTest {
     }
     Row row = venue.getRow(1);
     assertNotNull("row not created", row);
-
-    
+    assertEquals("invalid number of seats", 5, row.getSeatCount());
   }
 
 }

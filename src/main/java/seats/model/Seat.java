@@ -42,6 +42,12 @@ public class Seat {
    */
   private boolean isCenterSeat = false;
 
+  // set to true to indicate the seat is held
+  private boolean isHeld = false;
+
+  // set to true to indicate the seat is reserved
+  private boolean isReserved = false;
+
 
   /**
    * Creates a Seat
@@ -107,5 +113,28 @@ public class Seat {
   public void setCenterSeat(boolean isCenterSeat) {
     this.isCenterSeat = isCenterSeat;
   }
+
+  
+  /**
+   * Returns true if this seat is held
+   */
+  public boolean isHeld() { return isHeld; }
+
+  
+  /**
+   * Holds the seat for potential reservation
+   */
+  public void hold() { this.isHeld = true; }
+
+  
+  /**
+   * Returns true if this seat is reserved
+   */
+  public boolean isReserved() { return isReserved; }
+
+  /**
+   * Reserves the seat 
+   */
+  public void reserve() { this.isReserved = true; }
   
 }
