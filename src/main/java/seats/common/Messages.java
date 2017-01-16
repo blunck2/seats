@@ -20,4 +20,7 @@ public class Messages {
 
   public static String SEAT_IS_NOT_HELD_OR_RESERVED = "seat is not held or reserved";
 
+  public static String SEAT_DOES_NOT_EXIST = "seat does not exist";
+
+  public static String SEAT_IS_NOT_OPEN = "seat is not open";
 }

@@ -72,10 +72,13 @@ public class Venue {
    * @param seatNumber the seat number in the row
    * @param customerEmailAddress the email address for the customer
    * holding the seat
+   * @return the held seat
    * @throws IllegalArgumentException if the seat does not exist
    * @throws SeatUnavailableException if the seat is not open
    */
-  public void holdSeat(int rowNumber, int seatNumber, String customerEmailAddress)
+  public Seat holdSeat(int rowNumber,
+                       int seatNumber,
+                       String customerEmailAddress)
     throws SeatUnavailableException {
 
     // if the row number is 0 or negative throw an exception
@@ -88,11 +91,20 @@ public class Venue {
       throw new IllegalArgumentException(ROW_NUMBER_DOES_NOT_EXIST);
     }
 
-    
-    
-    
-      
+    // find the seat to hold
+    Row row = rows.get(rowNumber - 1);
+    Seat seat = row.getSeat(seatNumber);
 
+    // if the seat is not open then throw an exception
+    if (! seat.isOpen()) {
+      throw new SeatUnavailableException(SEAT_IS_NOT_OPEN);
+    }
+
+    // hold the seat
+    seat.hold(customerEmailAddress);
+
+    // return the seat
+    return seat;
   }
 
 }

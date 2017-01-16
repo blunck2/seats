@@ -2,6 +2,8 @@ package seats.model;
 
 import java.util.List;
 
+import static seats.common.Messages.*;
+
 
 /**
  * <p>
@@ -50,6 +52,18 @@ public class Row {
    * Returns the number of seats in the row
    */
   public int getSeatCount() { return seats.size(); }
+
+  /**
+   * Returns the requested
+   * @throws IllegalArgumentException if the seat requested does not exist
+   */
+  public Seat getSeat(int seatNumber) {
+    if (seatNumber > (getSeatCount() + 1)) {
+      throw new IllegalArgumentException(SEAT_DOES_NOT_EXIST);
+    }
+
+    return seats.get(seatNumber - 1);
+  }
   
 
 }

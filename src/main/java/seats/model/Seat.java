@@ -126,8 +126,12 @@ public class Seat {
   
   /**
    * Holds the seat for potential reservation
+   * @param customerEmailAddress the email address of the seat holder
    */
-  public void hold() { this.isHeld = true; }
+  public void hold(String customerEmailAddress) {
+    this.isHeld = true;
+    this.customerEmailAddress = customerEmailAddress;
+  }
 
   
   /**
