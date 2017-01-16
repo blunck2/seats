@@ -2,9 +2,11 @@ package seats.services;
 
 import seats.model.Venue;
 import seats.model.Seat;
+import seats.model.RowPrioritizedSeatComparator;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
@@ -23,6 +25,7 @@ public class StageProximitySeatLocatorService {
   // the venue to use
   private Venue venue;
 
+
   /**
    * Returns the Venue that is used
    */
@@ -40,6 +43,8 @@ public class StageProximitySeatLocatorService {
   public synchronized List<Seat> locateSeats(int numSeats)
     throws InsufficientAvailableSeatsException {
 
+    Comparator comparator = new RowPrioritizedSeatComparator();
+    
     return new ArrayList<>();
 
   }

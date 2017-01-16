@@ -3,6 +3,9 @@ package seats.model;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.util.List;
+
+
 /**
  * <p>
  * Unit tests for the Venue class
@@ -375,6 +378,26 @@ public class VenueTest {
     } catch (IllegalArgumentException e) {
       fail("should have thrown SeatUnavailableException");
     }
+  }
+
+  @Test
+  public void testGetOpenSeats() {
+    int rowCount = 10;
+    int seatCount = 10;
+    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
+
+    List<Seat> openSeats = venue.getOpenSeats();
+    assertNotNull("no open seats", openSeats);
+    int expectedSeatCount = rowCount * seatCount;
+    assertEquals("invalid number of open seats", expectedSeatCount, openSeats.size());
+
+    try {
+      Seat heldSeat = venue.holdSeat(1, 1, "customer@gmail.com");
+    } catch (SeatUnavailableException e) {
+      fail("failed to hold seat");
+    }
+    openSeats = venue.getOpenSeats();
+    assertEquals("invalid number of open seats", (expectedSeatCount - 1), openSeats.size());
     
   }
 }

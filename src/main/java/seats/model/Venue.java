@@ -182,4 +182,20 @@ public class Venue {
     return seat;
   }
 
+  /**
+   * Returns all of the open seats in the venue
+   */
+  List<Seat> getOpenSeats() {
+    List<Seat> seats = new ArrayList<>();
+    for (Row row : getRows()) {
+      for (Seat seat : row.getSeats()) {
+        if (seat.isOpen()) {
+          seats.add(seat);
+        }
+      }
+    }
+
+    return seats;
+  }
+
 }
