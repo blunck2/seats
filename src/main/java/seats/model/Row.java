@@ -58,6 +58,10 @@ public class Row {
    * @throws IllegalArgumentException if the seat requested does not exist
    */
   public Seat getSeat(int seatNumber) {
+    if (seatNumber <= 0) {
+      throw new IllegalArgumentException(SEAT_DOES_NOT_EXIST);
+    }
+    
     if (seatNumber > (getSeatCount() + 1)) {
       throw new IllegalArgumentException(SEAT_DOES_NOT_EXIST);
     }

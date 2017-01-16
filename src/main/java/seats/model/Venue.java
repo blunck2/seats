@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import static seats.common.Messages.*;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * <p>
@@ -73,7 +75,7 @@ public class Venue {
    * @param customerEmailAddress the email address for the customer
    * holding the seat
    * @return the held seat
-   * @throws IllegalArgumentException if the seat does not exist
+   * @throws IllegalArgumentException if the seat does not exist or the email address is blank or empty
    * @throws SeatUnavailableException if the seat is not open
    */
   public Seat holdSeat(int rowNumber,
@@ -89,6 +91,11 @@ public class Venue {
     // if the row number is greater than the number of rows in the venue throw an exception
     if (rowNumber > rows.size()) {
       throw new IllegalArgumentException(ROW_NUMBER_DOES_NOT_EXIST);
+    }
+
+    // if the email address is blank throw an exception
+    if (StringUtils.isBlank(customerEmailAddress)) {
+      throw new IllegalArgumentException(EMAIL_ADDRESS_IS_NULL_OR_BLANK);
     }
 
     // find the seat to hold
