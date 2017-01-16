@@ -59,6 +59,8 @@ public class RowFactory {
     List<Seat> seats = new ArrayList<>();
     for (int seatNumber = 1; seatNumber <= rowSeatCount; seatNumber++) {
       Seat seat = new Seat();
+      seat.setSeatNumber(seatNumber);
+      seat.setRowNumber(rowNumber);
 
       /*
        * if the seat is the first or last seat in the row it is considered

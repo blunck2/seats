@@ -121,5 +121,13 @@ public class RowFactoryTest {
       }
     }
     assertEquals("center seat not flagged", 1, totalCenterSeats);
+
+    // verify the row number is correct for the seat
+    firstSeat = row.getSeats().get(0);
+    assertNotNull("first seat null", firstSeat);
+    assertEquals("row number not correct", 1, firstSeat.getRowNumber());
+
+    // verify the seat number is correct for the seat
+    assertEquals("seat number not correct", 1, firstSeat.getSeatNumber());
   }
 }

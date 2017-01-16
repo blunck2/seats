@@ -106,6 +106,18 @@ public class VenueTest {
     } catch (SeatUnavailableException e) {
       fail("should have thrown IllegalArgumentException");
     }
+
+    // attempt to hold a valid seat
+    try {
+      heldSeat = venue.holdSeat(1, 1, customerEmailAddress);
+    } catch (SeatUnavailableException e) {
+      fail("seat is available");
+    }
+    assertNotNull("held seat is null", heldSeat);
+    assertEquals("row not correct", 1, heldSeat.getRowNumber());
+    assertEquals("seat not correct", 1, heldSeat.getSeatNumber());
+    assertFalse("seat is open", heldSeat.isOpen());
+    assertEquals("customer email address not set", customerEmailAddress, heldSeat.getCustomerEmailAddress());
     
   }
 }
