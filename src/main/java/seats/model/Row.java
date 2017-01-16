@@ -54,10 +54,10 @@ public class Row {
   public int getSeatCount() { return seats.size(); }
 
   /**
-   * Returns the requested
-   * @throws IllegalArgumentException if the seat requested does not exist
+   * Verifies the seatNumber is valid for the row
+   * @throws IllegalArgumentException if the seat does not exist
    */
-  public Seat getSeat(int seatNumber) {
+  void validateSeatNumber(int seatNumber) {
     if (seatNumber <= 0) {
       throw new IllegalArgumentException(SEAT_DOES_NOT_EXIST);
     }
@@ -65,7 +65,15 @@ public class Row {
     if (seatNumber > (getSeatCount() + 1)) {
       throw new IllegalArgumentException(SEAT_DOES_NOT_EXIST);
     }
+  }
 
+  /**
+   * Returns the requested
+   * @throws IllegalArgumentException if the seat requested does not exist
+   */
+  public Seat getSeat(int seatNumber) {
+    validateSeatNumber(seatNumber);
+    
     return seats.get(seatNumber - 1);
   }
   

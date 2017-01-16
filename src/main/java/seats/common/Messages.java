@@ -25,4 +25,10 @@ public class Messages {
   public static String SEAT_IS_NOT_OPEN = "seat is not open";
 
   public static String EMAIL_ADDRESS_IS_NULL_OR_BLANK = "email address is null or blank";
+
+  public static String EMAIL_ADDRESS_DOES_NOT_MATCH = "email address does not match";
+
+  public static String SEAT_IS_NOT_HELD = "seat is not held";
+
+  public static String SEAT_IS_RESERVED = "seat is reserved";
 }
