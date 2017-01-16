@@ -31,4 +31,8 @@ public class Messages {
   public static String SEAT_IS_NOT_HELD = "seat is not held";
 
   public static String SEAT_IS_RESERVED = "seat is reserved";
+
+  public static String INSUFFICIENT_OPEN_SEATS = "insufficient open seats";
+
+  public static String UNABLE_TO_LOCATE_ZERO_OR_NEGATIVE_SEATS = "unable to locate 0 or negative seats in the venue";
 }

@@ -185,7 +185,7 @@ public class Venue {
   /**
    * Returns all of the open seats in the venue
    */
-  List<Seat> getOpenSeats() {
+  public List<Seat> getOpenSeats() {
     List<Seat> seats = new ArrayList<>();
     for (Row row : getRows()) {
       for (Seat seat : row.getSeats()) {
