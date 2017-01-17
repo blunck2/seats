@@ -6,6 +6,10 @@ import seats.model.Seat;
 import static seats.model.SeatHoldRequestStatusEnum.*;
 
 import java.util.List;
+import java.util.ArrayList;
+
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,12 +30,22 @@ public class StatefulTransientTicketService implements TransientTicketService {
   // a thread-safe numeric id generator for SeatHold ids
   private AtomicInteger seatHoldIdGenerator;
 
+  // the SeatHold instances that have been created
+  private ConcurrentMap<Integer, SeatHold> seatHoldIndex;
+
+  // how long we should wait (in seconds) before expiring seat holds
+  private int seatHoldExpirationTimeInSeconds;
+
+  // how often we should look for seat holds that have expired
+  private int seatHoldExpirationCheckCycleTimeInSeconds;
+
   
   /**
    * Creates a StatefuleTransientTicketService
    */
   public StatefulTransientTicketService() {
     seatHoldIdGenerator = new AtomicInteger();
+    seatHoldIndex = new ConcurrentHashMap<>();
   }
 
   /**
@@ -55,6 +69,37 @@ public class StatefulTransientTicketService implements TransientTicketService {
    */
   public void setSeatLocator(SeatLocatorService seatLocator) {
     this.seatLocator = seatLocator;
+  }
+
+  /**
+   * Returns the amount of time (in seconds) that SeatHold instances
+   * should be permitted to reside in the cache before they are expired
+   */
+  public int getSeatHoldExpirationTimeInSeconds() {
+    return seatHoldExpirationTimeInSeconds;
+  }
+
+  /**
+   * Sets the amount of time (in seconds) that SeatHold instances
+   * should be permitted to reside in the cache before they are expired
+   */
+  public void setSeatHoldExpirationTimeInSeconds(int seatHoldExpirationTimeInSeconds) {
+    this.seatHoldExpirationTimeInSeconds = seatHoldExpirationTimeInSeconds;
+  }
+
+  
+  /**
+   * Returns the cycle time for how often we check the seat hold cache
+   */
+  public int getSeatHoldExpirationCheckCycleTimeInSeconds() {
+    return seatHoldExpirationCheckCycleTimeInSeconds;
+  }
+
+  /**
+   * Sets the cycle time for how often we check the seat hold cache
+   */
+  public void setSeatHoldExpirationCheckCycleTimeInSeconds(int seatHoldExpirationCheckCycleTimeInSeconds) {
+    this.seatHoldExpirationCheckCycleTimeInSeconds = seatHoldExpirationCheckCycleTimeInSeconds;
   }
   
 
@@ -84,14 +129,24 @@ public class StatefulTransientTicketService implements TransientTicketService {
     SeatHold seatHold = new SeatHold();
     seatHold.setCustomerEmailAddress(customerEmailAddress);
     seatHold.setId(seatHoldId);
+    seatHold.setNumberOfSeatsRequested(numSeats);
+
+    /*
+     * add the SeatHold to the index so it may be aged off or
+     * referenced during a subsequent seat reservation
+     */
+    seatHoldIndex.put(seatHoldId, seatHold);
     
     // locate the seats, updating the SeatHold if errors occurr
     boolean seatsLocated = false;
-    List<Seat> seatsToHold = null;
+    List<Seat> seatsToHold = new ArrayList<>();
     try {
-      seatsToHold = seatLocator.locateSeats(numSeats);
+      List<Seat> locatedSeats = seatLocator.locateSeats(numSeats);
+      seatsToHold.addAll(locatedSeats);
       seatsLocated = true;
       seatHold.setStatus(SUCCESS);
+      seatHold.setSeatsHeld(seatsToHold);
+      seatHold.setNumberOfSeatsHeld(seatsToHold.size());
     } catch (InsufficientAvailableSeatsException e) {
       seatHold.setStatus(FAILURE_DUE_TO_INSUFFICIENT_OPEN_SEATS);
       seatHold.setStatusDetails(e.getMessage());
@@ -105,11 +160,7 @@ public class StatefulTransientTicketService implements TransientTicketService {
       seat.hold(customerEmailAddress);
     }
 
-    // if seats were not located then return
-    if (! seatsLocated) {
-      return seatHold;
-    }
-
+    // return the seatHold
     return seatHold;
   }
 
