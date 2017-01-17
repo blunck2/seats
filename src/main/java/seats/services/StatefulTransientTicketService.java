@@ -3,9 +3,11 @@ package seats.services;
 import seats.model.Venue;
 import seats.model.SeatHold;
 import seats.model.Seat;
-import seats.model.SeatHoldRequestStatusEnum;
+import static seats.model.SeatHoldRequestStatusEnum.*;
 
 import java.util.List;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -20,6 +22,9 @@ public class StatefulTransientTicketService implements TransientTicketService {
 
   // locates the best seats
   private SeatLocatorService seatLocator;
+
+  // a thread-safe numeric id generator for SeatHold ids
+  private AtomicInteger seatHoldIdGenerator;
 
   
   /**
@@ -55,6 +60,11 @@ public class StatefulTransientTicketService implements TransientTicketService {
    * @see TransientTicketService#numSeatsAvailable
    */
   public int numSeatsAvailable() {
+    // if no venue is set then 0 seats are available
+    if (venue == null) {
+      return 0;
+    }
+    
     List<Seat> openSeats = venue.getOpenSeats();
     return openSeats.size();
   }
@@ -63,9 +73,15 @@ public class StatefulTransientTicketService implements TransientTicketService {
   /**
    * @see TransientTicketService#findAndHoldSeats
    */
-  public SeatHold findAndHoldSeats(int numSeats, String customerEmailAddress) {
+  public SeatHold findAndHoldSeats(int numSeats,
+                                   String customerEmailAddress) {
+    // create a new thread-safe integer id
+    int seatHoldId = seatHoldIdGenerator.incrementAndGet();
+
+    // create a SeatHold 
     SeatHold seatHold = new SeatHold();
     seatHold.setCustomerEmailAddress(customerEmailAddress);
+    seatHold.setId(seatHoldId);
     
     // locate the seats, updating the SeatHold if errors occurr
     boolean seatsLocated = false;
@@ -73,12 +89,12 @@ public class StatefulTransientTicketService implements TransientTicketService {
     try {
       seatsToHold = seatLocator.locateSeats(numSeats);
       seatsLocated = true;
-      seatHold.setStatus(SeatHoldRequestStatusEnum.SUCCESS);
+      seatHold.setStatus(SUCCESS);
     } catch (InsufficientAvailableSeatsException e) {
-      seatHold.setStatus(SeatHoldRequestStatusEnum.FAILURE_DUE_TO_INSUFFICIENT_OPEN_SEATS);
+      seatHold.setStatus(FAILURE_DUE_TO_INSUFFICIENT_OPEN_SEATS);
       seatHold.setStatusDetails(e.getMessage());
     } catch (IllegalArgumentException e) {
-      seatHold.setStatus(SeatHoldRequestStatusEnum.FAILURE_DUE_TO_INVALID_PARAMETERS);
+      seatHold.setStatus(FAILURE_DUE_TO_INVALID_PARAMETERS);
       seatHold.setStatusDetails(e.getMessage());
     }
 

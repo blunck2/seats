@@ -11,6 +11,9 @@ import java.util.ArrayList;
  * </p>
  */
 public class SeatHold {
+  // universely unique id of this hold
+  private int id;
+  
   // the number of seats to hold
   private int numberOfSeatsHeld;
 
@@ -37,6 +40,17 @@ public class SeatHold {
     seatsHeld = new ArrayList<>();
   }
 
+
+  /**
+   * Return the id of this SeatHold
+   */
+  public int getId() { return id; }
+
+  /**
+   * Sets the id of this SeatHold
+   */
+  public void setId(int id) { this.id = id; }
+  
 
   /**
    * Returns the number of seats that are held
