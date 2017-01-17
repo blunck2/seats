@@ -35,4 +35,9 @@ public class Messages {
   public static String INSUFFICIENT_OPEN_SEATS = "insufficient open seats";
 
   public static String UNABLE_TO_LOCATE_ZERO_OR_NEGATIVE_SEATS = "unable to locate 0 or negative seats in the venue";
+
+  public static String SEAT_IS_OPEN = "seat is open";
+
+  public static String SEAT_HOLD_ID_UNKNOWN = "seat hold id unknown";
+
 }

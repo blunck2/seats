@@ -133,6 +133,14 @@ public class Seat {
     this.customerEmailAddress = customerEmailAddress;
   }
 
+  /**
+   * Unholds the seat, returning it to open state
+   */
+  public void unhold() {
+    this.isHeld = false;
+    this.customerEmailAddress = null;
+  }
+
   
   /**
    * Returns true if this seat is reserved

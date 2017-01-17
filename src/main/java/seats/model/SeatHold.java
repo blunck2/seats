@@ -3,6 +3,8 @@ package seats.model;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
+
 
 /**
  * <p> 
@@ -31,6 +33,9 @@ public class SeatHold {
 
   // additional information about the status of the SeatHold
   private String statusDetails;
+
+  // the time when the hold was created
+  private DateTime creationTime;
   
   
   /**
@@ -38,6 +43,7 @@ public class SeatHold {
    */
   public SeatHold() {
     seatsHeld = new ArrayList<>();
+    creationTime = new DateTime();
   }
 
 
@@ -128,6 +134,19 @@ public class SeatHold {
    */
   public void setStatusDetails(String statusDetails) {
     this.statusDetails = statusDetails;
+  }
+
+
+  /**
+   * Returns the time the seat hold was created
+   */
+  public DateTime getCreationTime() { return creationTime; }
+
+  /**
+   * Sets the time the seat was held
+   */
+  public void setCreationTime(DateTime creationTime) {
+    this.creationTime = creationTime;
   }
 
 }

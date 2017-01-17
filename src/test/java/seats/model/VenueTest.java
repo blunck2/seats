@@ -398,6 +398,88 @@ public class VenueTest {
     }
     openSeats = venue.getOpenSeats();
     assertEquals("invalid number of open seats", (expectedSeatCount - 1), openSeats.size());
+  }
+
+  @Test
+  public void testUnholdSeat() {
+    Venue venue = VenueFactory.createVenue(10, 10, 4);
+    Seat seat = null;
+
+    // verify we cannot unhold a negative row
+    try {
+      venue.unholdSeat(-1, 1);
+      fail("unheld invalid seat");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect to have happen
+    } catch (SeatNotHeldException e) {
+      fail("expected IllegalArgumentException");
+    }
+
+    // verify we cannot unhold a 0 row
+    try {
+      venue.unholdSeat(0, 1);
+      fail("unheld invalid seat");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect to have happen
+    } catch (SeatNotHeldException e) {
+      fail("expected IllegalArgumentException");
+    }
+
+    // verify we cannot unhold a negative seat
+    try {
+      venue.unholdSeat(1, -1);
+      fail("unheld invalid seat");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect to have happen
+    } catch (SeatNotHeldException e) {
+      fail("expected IllegalArgumentException");
+    }
+
+    // verify we cannot unhold a 0 seat
+    try {
+      venue.unholdSeat(1, 0);
+      fail("unheld invalid seat");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect to have happen
+    } catch (SeatNotHeldException e) {
+      fail("expected IllegalArgumentException");
+    }
+
+    // verify we cannot unhold an open seat
+    try {
+      venue.unholdSeat(1, 1);
+      fail("unheld open seat");
+    } catch (IllegalArgumentException e) {
+      fail("expected SeatNotHeldException");
+    } catch (SeatNotHeldException e) {
+      // do nothing; this is what we expect to have happen
+    }
+
+    // verify we can unhold a held seat
+    try {
+      venue.holdSeat(1, 1, "customer@gmail.com");
+      venue.unholdSeat(1, 1);
+    } catch (IllegalArgumentException e) {
+      fail("failed to unhold seat");
+    } catch (SeatNotHeldException e) {
+      fail("failed to unhold seat");
+    } catch (SeatUnavailableException e) {
+      fail("failed to unhold seat");
+    }
+
+    // verify we cannot unhold a reserved seat
+    try {
+      venue.holdSeat(1, 1, "customer@gmail.com");
+      venue.reserveSeat(1, 1, "customer@gmail.com");
+      venue.unholdSeat(1, 1);
+      fail("unheld reserved seat");
+    } catch (IllegalArgumentException e) {
+      fail("failed to unhold seat");
+    } catch (SeatNotHeldException e) {
+      // do nothing; this is what we expect to happen
+    } catch (SeatUnavailableException e) {
+      fail("failed to unhold seat");
+    }
     
   }
 }

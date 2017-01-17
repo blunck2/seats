@@ -198,4 +198,36 @@ public class Venue {
     return seats;
   }
 
+  
+  /**
+   * Unholds the seat identified.
+   * @param rowNumber the row number of the seat
+   * @param seatNumber the seat number of the seat
+   * @return the Seat after it has been unheld
+   * @throws IllegalArgumentException if the rowNumber or seatNumber are <= 0
+   * @throws SeatNotHeldException if the seat is open or reserved
+   */
+  public Seat unholdSeat(int rowNumber, int seatNumber)
+    throws SeatNotHeldException {
+    
+    // locate the seat
+    Seat seat = findSeat(rowNumber, seatNumber);
+
+    // reserved seats cannot be unheld
+    if (seat.isReserved()) {
+      throw new SeatNotHeldException(SEAT_IS_RESERVED);
+    }
+
+    // open seats cannot be unheld
+    if (seat.isOpen()) {
+      throw new SeatNotHeldException(SEAT_IS_OPEN);
+    }
+
+    // unhold the seat
+    seat.unhold();
+
+    return seat;
+  }
+  
+
 }

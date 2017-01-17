@@ -28,6 +28,11 @@
       <version>${commons-lang.version}</version>
     </dependency>
     <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>${joda-time.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
@@ -46,6 +51,7 @@
     
     <junit.version>4.8.1</junit.version>
     <commons-lang.version>2.6</commons-lang.version>
+    <joda-time.version>2.1</joda-time.version>
     <mockito.version>1.8.4</mockito.version>
   </properties>
   
