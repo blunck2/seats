@@ -41,6 +41,21 @@ public class StatefulTransientTicketService implements TransientTicketService {
    */
   public void setVenue(Venue venue) { this.venue = venue; }
 
+  
+  /**
+   * Returns the seat holding service that is used
+   */
+  public SeatHoldingService getSeatHoldingService() {
+    return seatHoldingService;
+  }
+
+  /**
+   * Sets the seat holding service that is used
+   */
+  public void setSeatHoldingService(SeatHoldingService seatHoldingService) {
+    this.seatHoldingService = seatHoldingService;
+  }
+
 
   /**
    * Returns the seat locator service
@@ -100,6 +115,9 @@ public class StatefulTransientTicketService implements TransientTicketService {
     for (Seat seat : seatsToHold) {
       seat.hold(customerEmailAddress);
     }
+
+    // notify the seat holding service
+    seatHold = seatHoldingService.addSeatHolding(seatHold);
 
     // return the seatHold
     return seatHold;

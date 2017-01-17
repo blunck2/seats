@@ -55,9 +55,31 @@ public class StatefulTransientTicketServiceTest {
     StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
     locatorService.setVenue(venue);
     service.setSeatLocator(locatorService);
+    service.setSeatHoldingService(createMockedSeatHoldingService());
     SeatHold seatHold = service.findAndHoldSeats(numberOfSeatsToHold, "customer@gmail.com");
     openSeatCount = service.numSeatsAvailable();
     expectedSeatCount = (rowCount * seatCount) - numberOfSeatsToHold;
     assertEquals("inaccurate open seat count", expectedSeatCount, openSeatCount);
   }
+
+  /**
+   * Creates a mocked SeatHoldingService that returns a SeatHold with
+   * a populated id
+   */
+  private SeatHoldingService createMockedSeatHoldingService() {
+    SeatHoldingService mockedSeatHoldingService = mock(SeatHoldingService.class);
+    SeatHold mockedSeatHold = mock(SeatHold.class);
+    when(mockedSeatHold.getId()).thenReturn(1);
+    when(mockedSeatHoldingService.addSeatHolding(any(SeatHold.class))).thenReturn(mockedSeatHold);
+
+    return mockedSeatHoldingService;
+  }
+  
+  @Test
+  public void testFindAndHoldSeats() {
+    StatefulTransientTicketService service = new StatefulTransientTicketService();
+    
+    service.setSeatHoldingService(createMockedSeatHoldingService());
+
+  }    
 }
