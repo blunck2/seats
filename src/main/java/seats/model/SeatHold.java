@@ -14,11 +14,20 @@ public class SeatHold {
   // the number of seats to hold
   private int numberOfSeatsHeld;
 
+  // the number of seats that were requested to be held
+  private int numberOfSeatsRequested;
+
   // the email address of the customer who held the seats
   private String customerEmailAddress;
 
   // the seats that are being held
   private List<Seat> seatsHeld;
+
+  // the status of the seat hold request
+  private SeatHoldRequestStatusEnum status;
+
+  // additional information about the status of the SeatHold
+  private String statusDetails;
   
   
   /**
@@ -40,6 +49,20 @@ public class SeatHold {
   public void setNumberOfSeatsHeld(int numberOfSeatsHeld) {
     this.numberOfSeatsHeld = numberOfSeatsHeld;
   }
+
+
+  /**
+   * Returns the number of seats that were requested to be held
+   */
+  public int getNumberOfSeatsRequested() { return numberOfSeatsRequested; }
+
+  /**
+   * Sets the number of seats that were requested to be held
+   */
+  public void setNumberOfSeatsRequested(int numberOfSeatsRequested) {
+    this.numberOfSeatsRequested = numberOfSeatsRequested;
+  }
+  
 
 
   /**
@@ -68,6 +91,29 @@ public class SeatHold {
   public void setSeatsHeld(List<Seat> seatsHeld) { this.seatsHeld = seatsHeld; }
 
   
+  /**
+   * Returns the status 
+   */
+  public SeatHoldRequestStatusEnum getStatus() { return status; }
+
+  /**
+   * Sets the status
+   */
+  public void setStatus(SeatHoldRequestStatusEnum status) {
+    this.status = status;
+  }
+
   
+  /**
+   * Returns additional details about the status
+   */
+  public String getStatusDetails() { return statusDetails; }
+
+  /**
+   * Sets additional details about the status
+   */
+  public void setStatusDetails(String statusDetails) {
+    this.statusDetails = statusDetails;
+  }
 
 }
