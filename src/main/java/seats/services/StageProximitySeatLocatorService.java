@@ -24,7 +24,7 @@ import java.util.Collections;
  * on the aisle unless they are chosen at random.
  * </p>
  */
-public class StageProximitySeatLocatorService {
+public class StageProximitySeatLocatorService implements SeatLocatorService {
   // the venue to use
   private Venue venue;
 

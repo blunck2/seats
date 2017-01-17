@@ -30,7 +30,9 @@ public class StatefulTransientTicketService implements TransientTicketService {
   /**
    * Creates a StatefuleTransientTicketService
    */
-  public StatefulTransientTicketService() { }
+  public StatefulTransientTicketService() {
+    seatHoldIdGenerator = new AtomicInteger();
+  }
 
   /**
    * Returns the Venue 
