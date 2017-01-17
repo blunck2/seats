@@ -100,6 +100,11 @@ public class StatefulTransientTicketService implements TransientTicketService {
       seatHold.setStatusDetails(e.getMessage());
     }
 
+    // hold the seats
+    for (Seat seat : seatsToHold) {
+      seat.hold(customerEmailAddress);
+    }
+
     // if seats were not located then return
     if (! seatsLocated) {
       return seatHold;
