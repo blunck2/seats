@@ -117,7 +117,7 @@ public class StatefulTransientTicketService implements TransientTicketService {
     }
 
     // notify the seat holding service
-    seatHold = seatHoldingService.addSeatHolding(seatHold);
+    seatHold = seatHoldingService.addSeatHold(seatHold);
 
     // return the seatHold
     return seatHold;

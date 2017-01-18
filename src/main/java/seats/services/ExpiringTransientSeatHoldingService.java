@@ -12,8 +12,12 @@ import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
 
+import org.apache.log4j.Logger;
+
 import seats.model.Venue;
+import seats.model.Seat;
 import seats.model.SeatHold;
+import seats.model.SeatNotHeldException;
 
 import static seats.common.Messages.*;
 
@@ -26,6 +30,8 @@ import static seats.common.Messages.*;
  */
 public class ExpiringTransientSeatHoldingService
   implements TransientSeatHoldingService {
+  private static final Logger logger = Logger.getLogger(ExpiringTransientSeatHoldingService.class);
+  
   // the venue in which the seats are held
   private Venue venue;
 
@@ -35,11 +41,11 @@ public class ExpiringTransientSeatHoldingService
   // a thread-safe numeric id generator for SeatHold ids
   private AtomicInteger idGenerator;
 
-  // how long we should wait (in seconds) before expiring seat holds
-  private int expirationTimeInSeconds;
+  // how long we should wait (in milliseconds) before expiring seat holds
+  private int expirationTimeInMilliSeconds;
 
   // how often we should look for seat holds that have expired
-  private int expirationCheckCycleTimeInSeconds;
+  private int expirationCheckCycleTimeInMilliSeconds;
 
   // an executor that will periodically check for expired seat holds
   private ScheduledExecutorService expirationCheckExecutor;
@@ -47,31 +53,23 @@ public class ExpiringTransientSeatHoldingService
   // a Runnable that will clean up the index when called
   class SeatHoldIndexExpirationTask implements Runnable {
     SeatHoldIndexExpirationTask() { }
-
     /**
      * @Override
      */
     public void run() {
-      // determine the maximum age of permitted seat holds
-      DateTime maxAgePermitted = new DateTime();
-      maxAgePermitted.minusSeconds(expirationTimeInSeconds);
-
-      // iterate over the seat holds in the index
-      for (SeatHold seatHold : index.values()) {
-        DateTime seatHoldCreationTime = seatHold.getCreationTime();
-
-        /*
-         * if the current seat was created before the maximum age permitted
-         * then remove it from the map
-         */
-        if (seatHoldCreationTime.isBefore(maxAgePermitted)) {
-          index.remove(seatHold.getId());
-        }
+      /*
+       * Delegate all logic to another method that can both wrapped in
+       * a try-catch block and can more importantly be unit tested.  this
+       * is an example of TDD influencing the design of code.
+       */
+      try {
+        expireSeatHoldings();
+      } catch (Throwable t) {
+        logger.fatal(t);
       }
     }
   }
 
-  
   /**
    * Creates an ExpiringTransientSeatHoldingService
    */
@@ -82,6 +80,51 @@ public class ExpiringTransientSeatHoldingService
   }
 
   
+  /**
+   * Expires SeatHold records from the index
+   */
+  protected void expireSeatHoldings() {
+    // determine the maximum age of permitted seat holds
+    DateTime maxAgePermitted = new DateTime();
+    maxAgePermitted.minus(expirationTimeInMilliSeconds);
+    
+    // iterate over the seat holds in the index
+    for (SeatHold seatHold : index.values()) {
+      DateTime seatHoldCreationTime = seatHold.getCreationTime();
+      
+      /*
+       * if the current seat was created before the maximum age permitted
+       * then remove it from the map
+       */
+      if (seatHoldCreationTime.isBefore(maxAgePermitted)) {
+        
+        // unhold the seats in the venue
+        for (Seat heldSeat : seatHold.getSeatsHeld()) {
+          try {
+            int rowNumber = heldSeat.getRowNumber();
+            int seatNumber = heldSeat.getSeatNumber();
+            venue.unholdSeat(rowNumber, seatNumber);
+          } catch (SeatNotHeldException e) {
+            /*
+             * if the application is functioning properly this catch block
+             * should not be reached as there should only be 1 
+             * SeatHoldingService that is managing the Venue.  if another
+             * thread and another service holds a reference to the same
+             * Venue that is within this instance and is changing the
+             * state of the underlying Seat instances from held to reserved
+             * or open then it represents a very seriously logic error
+             */
+            logger.fatal(SEAT_STATE_ALTERED);
+          }
+          
+        }
+        
+        index.remove(seatHold.getId());
+      }
+    }
+  }
+  
+  
   @PostConstruct
   public void init() throws Exception {
     /*
@@ -89,51 +132,67 @@ public class ExpiringTransientSeatHoldingService
      * old seat hold records
      */
     Runnable task = new SeatHoldIndexExpirationTask();
-    long delay = expirationCheckCycleTimeInSeconds;
-    long period = expirationCheckCycleTimeInSeconds;
-    expirationCheckExecutor.scheduleAtFixedRate(task, delay, period, TimeUnit.SECONDS);
-  }
-
-
-  /**
-   * Returns the amount of time (in seconds) that SeatHold instances
-   * should be permitted to reside in the cache before they are expired
-   */
-  public int getExpirationTimeInSeconds() {
-    return expirationTimeInSeconds;
+    long delay = expirationCheckCycleTimeInMilliSeconds;
+    long period = expirationCheckCycleTimeInMilliSeconds;
+    expirationCheckExecutor.scheduleAtFixedRate(task, delay, period, TimeUnit.MILLISECONDS);
   }
 
   /**
-   * Sets the amount of time (in seconds) that SeatHold instances
+   * Returns the Venue in use
+   */
+  public Venue getVenue() { return venue; }
+
+  /**
+   * Sets the Venue to use
+   */
+  public void setVenue(Venue venue) { this.venue = venue; }
+
+
+  /**
+   * Returns the amount of time (in milliseconds) that SeatHold instances
    * should be permitted to reside in the cache before they are expired
    */
-  public void setExpirationTimeInSeconds(int expirationTimeInSeconds) {
-    this.expirationTimeInSeconds = expirationTimeInSeconds;
+  public int getExpirationTimeInMilliSeconds() {
+    return expirationTimeInMilliSeconds;
+  }
+
+  /**
+   * Sets the amount of time (in milliseconds) that SeatHold instances
+   * should be permitted to reside in the cache before they are expired
+   */
+  public void setExpirationTimeInMilliSeconds(int expirationTimeInMilliSeconds) {
+    this.expirationTimeInMilliSeconds = expirationTimeInMilliSeconds;
   }
 
   
   /**
    * Returns the cycle time for how often we check the seat hold cache
    */
-  public int getExpirationCheckCycleTimeInSeconds() {
-    return expirationCheckCycleTimeInSeconds;
+  public int getExpirationCheckCycleTimeInMilliSeconds() {
+    return expirationCheckCycleTimeInMilliSeconds;
   }
 
   /**
    * Sets the cycle time for how often we check the seat hold cache
    */
-  public void setExpirationCheckCycleTimeInSeconds(int expirationCheckCycleTimeInSeconds) {
-    this.expirationCheckCycleTimeInSeconds = expirationCheckCycleTimeInSeconds;
+  public void setExpirationCheckCycleTimeInMilliSeconds(int expirationCheckCycleTimeInMilliSeconds) {
+    this.expirationCheckCycleTimeInMilliSeconds = expirationCheckCycleTimeInMilliSeconds;
   }
+
+  /**
+   * Returns the total number of seats that are presently held
+   */
+  public int getSeatHoldingCount() { return index.keySet().size(); }
 
   
   /**
-   * @see SeatHoldingService#addSeatHolding
+   * @see SeatHoldingService#addSeatHold
    */
-  public SeatHold addSeatHolding(SeatHold holding) {
+  public SeatHold addSeatHold(SeatHold holding) {
     // create a new thread-safe integer id and set it in the holding
     int seatHoldId = idGenerator.incrementAndGet();
     holding.setId(seatHoldId);
+    System.out.println("addSeatHold id: " + seatHoldId);
 
     // store the holding in the index
     index.put(seatHoldId, holding);
@@ -144,9 +203,9 @@ public class ExpiringTransientSeatHoldingService
 
   
   /**
-   * @see SeatHoldingService#removeSeatHoldingById
+   * @see SeatHoldingService#removeSeatHoldById
    */
-  public void removeSeatHoldingById(int seatHoldId)
+  public void removeSeatHoldById(int seatHoldId)
     throws NoSuchSeatHoldException {
 
     /*
@@ -160,7 +219,12 @@ public class ExpiringTransientSeatHoldingService
     // remove the seat hold requested
     index.remove(seatHoldId);
   }
-  
-  
+
+  /**
+   * @see SeatHoldingService#getSeatHoldCount
+   */
+  public int getSeatHoldCount() {
+    return index.keySet().size();
+  }
       
 }

@@ -40,4 +40,6 @@ public class Messages {
 
   public static String SEAT_HOLD_ID_UNKNOWN = "seat hold id unknown";
 
+  public static String SEAT_STATE_ALTERED = "seat state has been altered";
+
 }

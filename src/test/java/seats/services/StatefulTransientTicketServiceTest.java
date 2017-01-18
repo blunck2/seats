@@ -70,7 +70,7 @@ public class StatefulTransientTicketServiceTest {
     SeatHoldingService mockedSeatHoldingService = mock(SeatHoldingService.class);
     SeatHold mockedSeatHold = mock(SeatHold.class);
     when(mockedSeatHold.getId()).thenReturn(1);
-    when(mockedSeatHoldingService.addSeatHolding(any(SeatHold.class))).thenReturn(mockedSeatHold);
+    when(mockedSeatHoldingService.addSeatHold(any(SeatHold.class))).thenReturn(mockedSeatHold);
 
     return mockedSeatHoldingService;
   }
