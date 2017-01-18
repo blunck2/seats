@@ -29,17 +29,17 @@ public class ComprehensiveSeatComparator implements Comparator<Seat> {
 
     // increase score based on if the seat is an aisle seat
     if (seat.isAisleSeat()) {
-      score += AISLE_SEAT_WEIGHT;
+      score -= AISLE_SEAT_WEIGHT;
     }
 
     // increase score based on if the seat is considered in the "center row"
     if (seat.isCenterRow()) {
-      score += CENTER_ROW_WEIGHT;
+      score -= CENTER_ROW_WEIGHT;
     }
 
     // increase score based on if the seat is the center seat of the row
     if (seat.isCenterSeat()) {
-      score += CENTER_SEAT_WEIGHT;
+      score -= CENTER_SEAT_WEIGHT;
     }
 
     return score;
@@ -52,6 +52,9 @@ public class ComprehensiveSeatComparator implements Comparator<Seat> {
   public int compare(Seat seat1, Seat seat2) {
     int score1 = scoreSeat(seat1);
     int score2 = scoreSeat(seat2);
+
+    System.out.println("score1: " + score1);
+    System.out.println("score2: " + score2);
 
     return score1 - score2;
   }
