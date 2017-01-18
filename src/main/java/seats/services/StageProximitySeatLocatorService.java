@@ -61,7 +61,7 @@ public class StageProximitySeatLocatorService implements SeatLocatorService {
     }
 
     // sort the open seats
-    Comparator comparator = new RowPrioritizedSeatComparator();
+    RowPrioritizedSeatComparator comparator = new RowPrioritizedSeatComparator();
     Collections.sort(openSeats, comparator);
 
     // add the located seats to a new collection

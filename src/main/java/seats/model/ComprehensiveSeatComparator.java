@@ -45,13 +45,14 @@ public class ComprehensiveSeatComparator implements Comparator<Seat> {
     return score;
   }
 
+
   /**
    * @see Comparator#compare
    */ 
-  public int compare(seats.model.Seat seat1, seats.model.Seat seat2) {
-    int row1 = seat1.getRowNumber();
-    int row2 = seat2.getRowNumber();
+  public int compare(Seat seat1, Seat seat2) {
+    int score1 = scoreSeat(seat1);
+    int score2 = scoreSeat(seat2);
 
-    return row1 - row2;
+    return score1 - score2;
   }
 }

@@ -55,6 +55,19 @@ public class ComprehensiveSeatComparatorTest {
     expected = (ROW_MULTIPLIER * rowNumber);
     actual = comparator.scoreSeat(seat);
     assertEquals("score not accurate", expected, actual);
+  }
+
+  @Test
+  public void testCompare() {
+    ComprehensiveSeatComparator comparator = new ComprehensiveSeatComparator();
+
+    // verify that the row is respected
+    Seat seat1 = new Seat();
+    seat1.setRowNumber(1);
+    Seat seat2 = new Seat();
+    seat2.setRowNumber(2);
+    int actual = comparator.compare(seat1, seat2);
+    assertTrue("incorrect result", actual < 0);
     
   }
 }
