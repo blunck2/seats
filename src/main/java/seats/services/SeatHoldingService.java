@@ -24,6 +24,15 @@ public interface SeatHoldingService {
   public void removeSeatHoldById(int seatHoldId)
     throws NoSuchSeatHoldException;
 
+  
+  /**
+   * Returns the SeatHold with the id provided
+   * @throws NoSuchSeatHoldException if a seat hold with the id
+   * provided cannot be located
+   */
+  public SeatHold getSeatHoldById(int seatHoldId)
+    throws NoSuchSeatHoldException;
+
 
   /**
    * Returns the number of seat hold instances

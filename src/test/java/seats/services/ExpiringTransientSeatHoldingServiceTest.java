@@ -178,6 +178,34 @@ public class ExpiringTransientSeatHoldingServiceTest {
       // do nothing; this is what we expect to happen
     }
   }
+
+
+  @Test
+  public void testGetSeatHoldById() {
+    Venue venue = createTestVenue();
+    
+    // create the ExpiringTransientSeatHoldingService
+    ExpiringTransientSeatHoldingService service = new ExpiringTransientSeatHoldingService();
+    service.setVenue(venue);
+
+    // create the seat hold
+    SeatHold seatHold = createSeatHold(venue.getRow(1).getSeats());
+
+    // add the seat hold to the service
+    seatHold = service.addSeatHold(seatHold);
+
+    // verify the getSeatHoldCount() method works
+    int instanceCount = service.getSeatHoldCount();
+    assertEquals("failed to add", 1, instanceCount);
+
+    // look for the seat hold
+    try {
+      seatHold = service.getSeatHoldById(seatHold.getId());
+      assertNotNull("failed to locate seat hold", seatHold);
+    } catch (NoSuchSeatHoldException e) {
+      fail("failed to locate seat hold");
+    }
+  }
   
   
   @Test

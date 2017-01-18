@@ -4,9 +4,12 @@ import seats.model.Venue;
 import seats.model.SeatHold;
 import seats.model.Seat;
 import static seats.model.SeatHoldRequestStatusEnum.*;
+import static seats.common.Messages.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -126,10 +129,67 @@ public class StatefulTransientTicketService implements TransientTicketService {
   
   /**
    * @see TransientTicketService#reserveSeats
+   * @throws IllegalArgumentException if the seatHoldId is negative or
+   * if the email address provided does not match the email address on
+   * the seat hold
    */
-  public String reserveSeats(int seatHoldId, String customerEmail) {
+  public String reserveSeats(int seatHoldId, String customerEmailAddress) {
+    // seat hold ids should be positive
+    if (seatHoldId < 0) {
+      throw new IllegalArgumentException(INVALID_SEAT_HOLD_ID);
+    }
+
+    // locate the seat hold with the id provided
+    SeatHold seatHold = null;
+    try {
+      seatHold = seatHoldingService.getSeatHoldById(seatHoldId);
+    } catch (NoSuchSeatHoldException e) {
+      throw new IllegalArgumentException(SEAT_HOLD_ID_UNKNOWN);
+    }
+
+    // get the underlying seats that should be reserved
+    List<Seat> heldSeats = seatHold.getSeatsHeld();
+
+    // verify the customerEmail address matches on all seats
+    boolean emailAddressesMatch = validateEmailAddressesMatch(customerEmailAddress, heldSeats);
+    
     return "ok";
-  }    
+  }
+
+
+  /**
+   * Validate that all of the seats provided contain an email address that
+   * matches the emailAddressToMatch parameter
+   * @param emailAddressToMatch the email address to compare against
+   * the email addresses in the seats provided
+   * @param seats the seats to search
+   * @return true if the customerEmailAddress in each Seat matches the
+   * emailAddressToMatch, false otherwise
+   */
+  protected boolean validateEmailAddressesMatch(String emailAddressToMatch,
+                                                List<Seat> seats) {
+    // make sure seats actually exist
+    if ((seats == null) || (seats.size() == 0)) {
+      return false;
+    }
+
+    // add all of the email addresses to a set
+    Set<String> distinctEmailAddresses = new TreeSet<>();
+    for (Seat seat : seats) {
+      distinctEmailAddresses.add(seat.getCustomerEmailAddress());
+    }
+
+    // if there's more than 1 email address in the set then return false
+    if (distinctEmailAddresses.size() > 1) {
+      return false;
+    }
+
+    // get the email address from the seats
+    String emailAddressFromSeats = distinctEmailAddresses.iterator().next();
+
+    // compare the email address from the seats with the search one and return
+    return emailAddressFromSeats.equals(emailAddressToMatch);
+  }
   
 
 }

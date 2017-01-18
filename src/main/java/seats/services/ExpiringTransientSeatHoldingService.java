@@ -226,5 +226,20 @@ public class ExpiringTransientSeatHoldingService
   public int getSeatHoldCount() {
     return index.keySet().size();
   }
-      
+
+
+  /**
+   * @see SeatHoldingService#getSeatHoldById
+   */
+  public SeatHold getSeatHoldById(int id) throws NoSuchSeatHoldException {
+    // if the id does not exist through an exception
+    if (! index.containsKey(id)) {
+      throw new NoSuchSeatHoldException(SEAT_HOLD_ID_UNKNOWN);
+    }
+
+    // locate the seat hold and return it
+    SeatHold seatHold = index.get(id);
+    return seatHold;
+  }
+  
 }

@@ -74,6 +74,50 @@ public class StatefulTransientTicketServiceTest {
 
     return mockedSeatHoldingService;
   }
+
+  @Test
+  public void testValidateEmailAddressesMatch() {
+    StatefulTransientTicketService service = new StatefulTransientTicketService();
+    String customerEmailAddress = "customer@gmail.com";
+    boolean valid = false;
+  
+    // verify we can handle null seats
+    valid = service.validateEmailAddressesMatch(customerEmailAddress, null);
+    assertFalse("did not handle null", valid);
+
+    // verify we can handle 0 length seats
+    List<Seat> seats = new ArrayList<>();
+    valid = service.validateEmailAddressesMatch(customerEmailAddress, seats);
+    assertFalse("did not handle 0 length seats", valid);
+
+    // verify we can handle 1 seat that's the same
+    Seat seat = mock(Seat.class);
+    when(seat.getCustomerEmailAddress()).thenReturn(customerEmailAddress);
+    seats.clear();
+    seats.add(seat);
+    valid = service.validateEmailAddressesMatch(customerEmailAddress, seats);
+    assertTrue("did not handle 1 seat that matched", valid);
+
+    // verify we can handle multiple seats that are the same
+    seats.clear();
+    for (int i = 0; i < 5; i++) {
+      seats.add(seat);
+    }
+    valid = service.validateEmailAddressesMatch(customerEmailAddress, seats);
+    assertTrue("did not handle multiple seats that matched", valid);
+
+    // verify we can handle differing email addresses
+    Seat seat1 = mock(Seat.class);
+    when(seat1.getCustomerEmailAddress()).thenReturn("a");
+    Seat seat2 = mock(Seat.class);
+    when(seat2.getCustomerEmailAddress()).thenReturn("b");
+    seats.clear();
+    seats.add(seat1);
+    seats.add(seat2);
+    valid = service.validateEmailAddressesMatch(customerEmailAddress, seats);
+    assertFalse("did not handle multiple seats that differed", valid);
+  }
+  
   
   @Test
   public void testFindAndHoldSeats() {
