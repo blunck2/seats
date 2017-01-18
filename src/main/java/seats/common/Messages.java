@@ -44,4 +44,10 @@ public class Messages {
 
   public static String INVALID_SEAT_HOLD_ID = "seat hold id unknown";
 
+  public static String SEAT_HOLD_CUSTOMER_EMAIL_ADDRESS_MISMATCH = "customer email addresses from seats held do not match specified customer email address";
+
+  public static String SEAT_HOLD_EXPIRED = "seat hold expired";
+
+  public static String SEAT_UNAVAILABLE_FOR_RESERVATION = "seat unavailble for reservation";
+  
 }

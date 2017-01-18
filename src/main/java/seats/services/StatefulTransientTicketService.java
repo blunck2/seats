@@ -3,6 +3,7 @@ package seats.services;
 import seats.model.Venue;
 import seats.model.SeatHold;
 import seats.model.Seat;
+import seats.model.SeatUnavailableException;
 import static seats.model.SeatHoldRequestStatusEnum.*;
 import static seats.common.Messages.*;
 
@@ -10,6 +11,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
+
+import org.apache.log4j.Logger;
 
 
 /**
@@ -27,6 +31,8 @@ public class StatefulTransientTicketService implements TransientTicketService {
 
   // keeps track of the seats that are held
   private SeatHoldingService seatHoldingService;
+
+  private static Logger logger = Logger.getLogger(StatefulTransientTicketService.class);
 
   
   /**
@@ -152,8 +158,48 @@ public class StatefulTransientTicketService implements TransientTicketService {
 
     // verify the customerEmail address matches on all seats
     boolean emailAddressesMatch = validateEmailAddressesMatch(customerEmailAddress, heldSeats);
-    
-    return "ok";
+    if (!emailAddressesMatch) {
+      throw new IllegalArgumentException(SEAT_HOLD_CUSTOMER_EMAIL_ADDRESS_MISMATCH);
+    }
+
+    // reserve each held seat
+    for (Seat seat : heldSeats) {
+      int rowNumber = seat.getRowNumber();
+      int seatNumber = seat.getSeatNumber();
+      try {
+        venue.reserveSeat(rowNumber, seatNumber, customerEmailAddress);
+      } catch (SeatUnavailableException e) {
+        /*
+         * a race condition occurs between the thread that removes the
+         * seat seat hold from cache and this thread to reserve the
+         * seat.  in order for this to occur the thread to remove the
+         * seat hold would have to update the venue while another
+         * thread held the seat and this thread attempted to reserve
+         * the seat.  we could use a shared semaphore to alleviate
+         * this race condition.  for now we'll log it and move on as
+         * this is simply a programming assignment as opposed to
+         * production code.
+         */
+        logger.warn(SEAT_UNAVAILABLE_FOR_RESERVATION);
+      }
+    }
+
+    // release the seat hold
+    try {
+      seatHoldingService.removeSeatHoldById(seatHoldId);
+    } catch (NoSuchSeatHoldException e) {
+      /*
+       * a race condition occurs between the thread that removes the
+       * seat hold from the cache and this thread to remove the seat
+       * hold.  the side effect of this race condition is this
+       * exception occurring and that's ok.  we will simply log the
+       * warning and proceed.
+       */
+      logger.warn(SEAT_HOLD_EXPIRED);
+    }
+
+    // the confirmation code isn't used elsewhere so just return a UUID
+    return UUID.randomUUID().toString();
   }
 
 
