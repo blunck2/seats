@@ -172,5 +172,58 @@ public class StatefulTransientTicketServiceTest {
     assertEquals("invalid seat hold state", SUCCESS, seatHold.getStatus());
     int newNumSeatsAvailable = service.numSeatsAvailable();
     assertEquals("invalid number of seats available", (numSeatsAvailable - 1), newNumSeatsAvailable);
-  }    
+  }
+
+  @Test
+  public void testReserveSeats() {
+    int rowCount = 10;
+    int seatCount = 10;
+    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
+
+    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    locatorService.setVenue(venue);
+
+    ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
+    holdingService.setVenue(venue);
+
+    StatefulTransientTicketService service = new StatefulTransientTicketService();
+    service.setVenue(venue);
+    service.setSeatLocator(locatorService);
+    service.setSeatHoldingService(holdingService);
+    String customerEmailAddress = "customer@gmail.com";
+
+    SeatHold seatHold = null;
+    String confirmationCode = null;
+
+    // verify you cannot reserve using a negative seat hold id
+    try {
+      confirmationCode = service.reserveSeats(-1, customerEmailAddress);
+      fail("reserved negative id");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect
+    }
+
+    // verify you cannot reserve using a seat hold id that does not exist
+    try {
+      confirmationCode = service.reserveSeats(100, customerEmailAddress);
+      fail("reserved non-existing hold");
+    } catch (IllegalArgumentException e) {
+      // do nothing; this is what we expect
+    }
+    
+    // verify you cannot reserve using a different email address
+    seatHold = service.findAndHoldSeats(1, customerEmailAddress);
+    try {
+      confirmationCode = service.reserveSeats(seatHold.getId(), "someoneElse");
+    } catch (IllegalArgumentException e) {
+      // do nothing;  this is what we expect
+    }
+
+    // verify you can reserve with the same email address
+    confirmationCode = service.reserveSeats(seatHold.getId(), customerEmailAddress);
+    assertNotNull("confirmation code null", confirmationCode);
+
+    // verify the hold was removed
+    assertEquals("seat hold not removed", 0, holdingService.getSeatHoldingCount());
+  }
 }
