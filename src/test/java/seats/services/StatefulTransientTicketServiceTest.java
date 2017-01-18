@@ -13,6 +13,8 @@ import seats.model.VenueFactory;
 import seats.model.Seat;
 import seats.model.SeatHold;
 
+import static seats.model.SeatHoldRequestStatusEnum.*;
+
 
 /**
  * <p>
@@ -75,6 +77,7 @@ public class StatefulTransientTicketServiceTest {
     return mockedSeatHoldingService;
   }
 
+
   @Test
   public void testValidateEmailAddressesMatch() {
     StatefulTransientTicketService service = new StatefulTransientTicketService();
@@ -121,9 +124,53 @@ public class StatefulTransientTicketServiceTest {
   
   @Test
   public void testFindAndHoldSeats() {
-    StatefulTransientTicketService service = new StatefulTransientTicketService();
-    
-    service.setSeatHoldingService(createMockedSeatHoldingService());
+    int rowCount = 10;
+    int seatCount = 10;
+    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
 
+    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    locatorService.setVenue(venue);
+
+    ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
+    holdingService.setVenue(venue);
+
+    StatefulTransientTicketService service = new StatefulTransientTicketService();
+    service.setVenue(venue);
+    service.setSeatLocator(locatorService);
+    service.setSeatHoldingService(holdingService);
+    String customerEmailAddress = "customer@gmail.com";
+
+    SeatHold seatHold = null;
+
+    // verify you can't negative seats
+    seatHold = service.findAndHoldSeats(-1, customerEmailAddress);
+    assertEquals("invalid state", FAILURE_DUE_TO_INVALID_PARAMETERS, seatHold.getStatus());
+
+    // verify you can't locate 0 seats
+    seatHold = service.findAndHoldSeats(0, customerEmailAddress);
+    assertEquals("invalid state", FAILURE_DUE_TO_INVALID_PARAMETERS, seatHold.getStatus());
+
+    // verify you can't use a null email address
+    seatHold = service.findAndHoldSeats(1, null);
+    assertEquals("invalid state", FAILURE_DUE_TO_INVALID_PARAMETERS, seatHold.getStatus());
+
+    // verify you can't use an empty address
+    seatHold = service.findAndHoldSeats(1, "");
+    assertEquals("invalid state", FAILURE_DUE_TO_INVALID_PARAMETERS, seatHold.getStatus());
+
+    // verify you can't use a blank address
+    seatHold = service.findAndHoldSeats(1, "  ");
+    assertEquals("invalid state", FAILURE_DUE_TO_INVALID_PARAMETERS, seatHold.getStatus());
+
+    // verify you can't locate more seats than exist in the venue
+    int numSeatsAvailable = service.numSeatsAvailable();
+    seatHold = service.findAndHoldSeats(numSeatsAvailable + 1, customerEmailAddress);
+    assertEquals("invalid seat hold state", FAILURE_DUE_TO_INSUFFICIENT_OPEN_SEATS, seatHold.getStatus());
+
+    // verify you can locate a seat
+    seatHold = service.findAndHoldSeats(1, customerEmailAddress);
+    assertEquals("invalid seat hold state", SUCCESS, seatHold.getStatus());
+    int newNumSeatsAvailable = service.numSeatsAvailable();
+    assertEquals("invalid number of seats available", (numSeatsAvailable - 1), newNumSeatsAvailable);
   }    
 }

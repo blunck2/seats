@@ -15,6 +15,8 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * <p>
@@ -101,6 +103,14 @@ public class StatefulTransientTicketService implements TransientTicketService {
     SeatHold seatHold = new SeatHold();
     seatHold.setCustomerEmailAddress(customerEmailAddress);
     seatHold.setNumberOfSeatsRequested(numSeats);
+
+    // fast-fail on empty or null customerEmailAddress
+    if (StringUtils.isBlank(customerEmailAddress)) {
+      seatHold.setStatus(FAILURE_DUE_TO_INVALID_PARAMETERS);
+      seatHold.setStatusDetails("customerEmailAddress");
+
+      return seatHold;
+    }
 
     // locate the seats, updating the SeatHold if errors occurr
     boolean seatsLocated = false;

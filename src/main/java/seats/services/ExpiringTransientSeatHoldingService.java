@@ -192,7 +192,6 @@ public class ExpiringTransientSeatHoldingService
     // create a new thread-safe integer id and set it in the holding
     int seatHoldId = idGenerator.incrementAndGet();
     holding.setId(seatHoldId);
-    System.out.println("addSeatHold id: " + seatHoldId);
 
     // store the holding in the index
     index.put(seatHoldId, holding);
