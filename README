@@ -1,0 +1,52 @@
+Unit tests were the primary method for verifying the code works.  To run them
+ensure you have Java 8 and Maven 3.3.0 or higher installed.  To execute unit
+tests run the following command:
+
+$ mvn clean test
+
+
+The application has a ReST interface and it can be started by running:
+$ java -jar target/application-0.0.1-SNAPSHOT.jar
+
+When the application starts up it listens on :8080.
+
+There are 2 abstractions I'd like to draw your attention to:
+
+Abstraction #1:  Seat Comparison
+The requirements stated the "best" seat should be selected for holding.  There
+are many ways to assess "best" and I chose to express that as a
+Comparator<Seat>.  I created a SeatLocatorService as an abstraction from the
+details of how to select the "best" seat and I further genericized that notion
+by using the Comparator interface.  A further genericization of this notion
+could be achieved by specifying Properties on Seat's and a corresponding
+weight for each property so that arbitrary properties could be introduced
+at runtime.  I had limited time and didn't implement this but recognized the
+need for extensibility in assessing the "best" seat.  I hard coded attributes
+(and logic) for notions like aisleSeat, centerRow, and centerSeat but this
+could be further genericized into properties.
+
+Abstraction #2:  Seat Holding
+The requirements did not specify the durability requirements for holding
+seats.  I abstracted that lack of specificity through an interface and
+implemented a stateful transient (in-memory) version of the interface that
+relied on multi-threading to age off seat holds.  I also implemented a
+stateless durable (mongo backed) version of the interface that punts the
+concurrency issues to mongo.
+
+
+I did not focus on property management and relied on Spring Boot for
+getting up and running quickly as I only had 1 week to code.
+Additionally, I did not focus on logging and instead relied on
+throwing exceptions.  I spent a lot of coding time on input validation
+and a lot of unit test time on verifying inputs and outputs.  That
+could be cleaned up and centralized but I did not have time to do so
+and it is recommended.
+
+
+Assumptions
+
+Assumptions are limited.  Concurrency requirements are assumed and
+mitigated through java.util.concurrent classes or Mongo.  There is no
+assumption that all rows have the same number of seats.  The only
+assumption really is that rows with lower numbers are closer to the
+stage.
