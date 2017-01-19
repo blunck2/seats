@@ -14,19 +14,19 @@ import java.util.Collections;
 
 /**
  * <p>
- * An implementation of the SeatLocatorService that uses row number to locate 
- * the best seats in the venue.
+ * An implementation of the SeatLocatorService that uses a Comparator<Seat>
+ * to locate the best seat in the house.
  * </p>
  * 
- * <p>
- * This implementation only considers the row number of the seats within
- * the venue and does not locate seats towards the center of the row or 
- * on the aisle unless they are chosen at random.
- * </p>
+ * @see ComprehensiveSeatComparator
+ * @see RowPrioritizedSeatComparator
  */
-public class StageProximitySeatLocatorService implements SeatLocatorService {
+public class ComparatorBasedSeatLocatorService implements SeatLocatorService {
   // the venue to use
   private Venue venue;
+
+  // the comparator to use
+  private Comparator<Seat> comparator;
 
 
   /**
@@ -39,6 +39,19 @@ public class StageProximitySeatLocatorService implements SeatLocatorService {
    */
   public void setVenue(Venue venue) { this.venue = venue; }
 
+
+  /**
+   * Returns the Comparator that is used
+   */
+  public Comparator<Seat> getComparator() { return comparator; }
+
+  /**
+   * Sets the Comparator to use
+   */
+  public void setComparator(Comparator<Seat> comparator) {
+    this.comparator = comparator;
+  }
+  
   
   /**
    * @see SeatLocatorService#locateSeats
@@ -61,7 +74,6 @@ public class StageProximitySeatLocatorService implements SeatLocatorService {
     }
 
     // sort the open seats
-    RowPrioritizedSeatComparator comparator = new RowPrioritizedSeatComparator();
     Collections.sort(openSeats, comparator);
 
     // add the located seats to a new collection

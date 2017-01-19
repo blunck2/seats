@@ -9,6 +9,7 @@ import seats.model.Venue;
 import seats.model.VenueFactory;
 import seats.model.Seat;
 import seats.model.SeatUnavailableException;
+import seats.model.RowPrioritizedSeatComparator;
 
 
 /**
@@ -16,13 +17,14 @@ import seats.model.SeatUnavailableException;
  * Unit tests for the StageProximitySeatLocatorService class
  * </p>
  */
-public class StageProximitySeatLocatorServiceTest {
+public class ComparatorBasedSeatLocatorServiceTest {
 
   @Test
   public void testLocateSeats() {
     Venue venue = VenueFactory.createVenue(10, 10, 4);
-    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
     locatorService.setVenue(venue);
+    locatorService.setComparator(new RowPrioritizedSeatComparator());
 
     List<Seat> locatedSeats = null;
     

@@ -12,6 +12,7 @@ import seats.model.Venue;
 import seats.model.VenueFactory;
 import seats.model.Seat;
 import seats.model.SeatHold;
+import seats.model.RowPrioritizedSeatComparator;
 
 import static seats.model.SeatHoldRequestStatusEnum.*;
 
@@ -54,8 +55,9 @@ public class StatefulTransientTicketServiceTest {
 
     // hold some seats and verify the seat count has dropped
     int numberOfSeatsToHold = 10;
-    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
     locatorService.setVenue(venue);
+    locatorService.setComparator(new RowPrioritizedSeatComparator());
     service.setSeatLocator(locatorService);
     service.setSeatHoldingService(createMockedSeatHoldingService());
     SeatHold seatHold = service.findAndHoldSeats(numberOfSeatsToHold, "customer@gmail.com");
@@ -128,8 +130,9 @@ public class StatefulTransientTicketServiceTest {
     int seatCount = 10;
     Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
 
-    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
     locatorService.setVenue(venue);
+    locatorService.setComparator(new RowPrioritizedSeatComparator());
 
     ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
     holdingService.setVenue(venue);
@@ -180,8 +183,9 @@ public class StatefulTransientTicketServiceTest {
     int seatCount = 10;
     Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
 
-    StageProximitySeatLocatorService locatorService = new StageProximitySeatLocatorService();
+    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
     locatorService.setVenue(venue);
+    locatorService.setComparator(new RowPrioritizedSeatComparator());
 
     ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
     holdingService.setVenue(venue);

@@ -122,7 +122,5 @@ public class ComprehensiveSeatComparatorTest {
     seat2.setCenterSeat(true);
     actual = comparator.compare(seat1, seat2);
     assertTrue("incorrect result", actual < 0);
-    
-    
   }
 }

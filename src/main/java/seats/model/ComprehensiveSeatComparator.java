@@ -53,9 +53,6 @@ public class ComprehensiveSeatComparator implements Comparator<Seat> {
     int score1 = scoreSeat(seat1);
     int score2 = scoreSeat(seat2);
 
-    System.out.println("score1: " + score1);
-    System.out.println("score2: " + score2);
-
     return score1 - score2;
   }
 }
