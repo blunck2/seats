@@ -19,18 +19,60 @@ import static seats.model.SeatHoldRequestStatusEnum.*;
 
 /**
  * <p>
- * Unit tests for the StatefulTransientTicketService class
+ * Unit tests for the GenericTicketService class
  * </p>
  */
-public class StatefulTransientTicketServiceTest {
+public class GenericTicketServiceTest {
+  private Venue createVenue() {
+    int rowCount = 10;
+    int seatCount = 10;
+    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
+
+    return venue;
+  }
+  
+  private GenericTicketService createTransientTicketService(Venue venue) {
+    GenericTicketService ticketService = new GenericTicketService();
+    ticketService.setVenue(venue);
+
+    ComparatorBasedSeatLocatorService seatLocatorService = new ComparatorBasedSeatLocatorService();
+    seatLocatorService.setVenue(venue);
+    seatLocatorService.setComparator(new RowPrioritizedSeatComparator());
+    ticketService.setSeatLocatorService(seatLocatorService);
+
+    SeatHoldingService seatHoldingService = new ExpiringTransientSeatHoldingService();
+    seatHoldingService.setVenue(venue);
+    ticketService.setSeatHoldingService(seatHoldingService);
+
+    return ticketService;
+  }
+
+
+  private GenericTicketService createDurableTicketService(Venue venue) {
+    GenericTicketService ticketService = new GenericTicketService();
+    ticketService.setVenue(venue);
+
+    ComparatorBasedSeatLocatorService seatLocatorService = new ComparatorBasedSeatLocatorService();
+    seatLocatorService.setVenue(venue);
+    seatLocatorService.setComparator(new RowPrioritizedSeatComparator());
+    ticketService.setSeatLocatorService(seatLocatorService);
+
+    SeatHoldingService seatHoldingService = new ExpiringDurableSeatHoldingService();
+    seatHoldingService.setVenue(venue);
+    ticketService.setSeatHoldingService(seatHoldingService);
+
+    return ticketService;
+  }
+  
 
   @Test
-  public void testNumSeatsAvailable() {
-    StatefulTransientTicketService service = new StatefulTransientTicketService();
+  public void testTransientNumSeatsAvailable() {
+    Venue venue = createVenue();
+    GenericTicketService service = createTransientTicketService(venue);
 
     // verify that when a venue has not been set then 0 open seats exist
     int openSeatCount = service.numSeatsAvailable();
-    assertEquals("empty venue has seats", 0, openSeatCount);
+    assertEquals("empty venue has seats", venue.getSeatCount(), openSeatCount);
 
     // mock the venue's call to getOpenSeats() so it returns 1 open seat
     Seat seat = new Seat();
@@ -44,22 +86,22 @@ public class StatefulTransientTicketServiceTest {
     openSeatCount = service.numSeatsAvailable();
     assertEquals("inaccurate open seat count", 1, openSeatCount);
 
-    // create a Venue as any other caller would and verify seat count
-    int rowCount = 10;
-    int seatCount = 10;
-    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
-    service.setVenue(venue);
+    service.setVenue(mockedVenue);
     openSeatCount = service.numSeatsAvailable();
-    int expectedSeatCount = rowCount * seatCount;
+    int expectedSeatCount = 1;
     assertEquals("inaccurate open seat count", expectedSeatCount, openSeatCount);
 
     // hold some seats and verify the seat count has dropped
+    int rowCount = 1;
+    int seatCount = 10;
+    venue = VenueFactory.createVenue(1, 10, 4);
     int numberOfSeatsToHold = 10;
     ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
     locatorService.setVenue(venue);
     locatorService.setComparator(new RowPrioritizedSeatComparator());
-    service.setSeatLocator(locatorService);
+    service.setSeatLocatorService(locatorService);
     service.setSeatHoldingService(createMockedSeatHoldingService());
+    service.setVenue(venue);
     SeatHold seatHold = service.findAndHoldSeats(numberOfSeatsToHold, "customer@gmail.com");
     openSeatCount = service.numSeatsAvailable();
     expectedSeatCount = (rowCount * seatCount) - numberOfSeatsToHold;
@@ -81,8 +123,10 @@ public class StatefulTransientTicketServiceTest {
 
 
   @Test
-  public void testValidateEmailAddressesMatch() {
-    StatefulTransientTicketService service = new StatefulTransientTicketService();
+  public void testTransientValidateEmailAddressesMatch() {
+    Venue venue = createVenue();
+    GenericTicketService service = createTransientTicketService(venue);
+
     String customerEmailAddress = "customer@gmail.com";
     boolean valid = false;
   
@@ -125,22 +169,9 @@ public class StatefulTransientTicketServiceTest {
   
   
   @Test
-  public void testFindAndHoldSeats() {
-    int rowCount = 10;
-    int seatCount = 10;
-    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
-
-    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
-    locatorService.setVenue(venue);
-    locatorService.setComparator(new RowPrioritizedSeatComparator());
-
-    ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
-    holdingService.setVenue(venue);
-
-    StatefulTransientTicketService service = new StatefulTransientTicketService();
-    service.setVenue(venue);
-    service.setSeatLocator(locatorService);
-    service.setSeatHoldingService(holdingService);
+  public void testTransientFindAndHoldSeats() {
+    Venue venue = createVenue();
+    GenericTicketService service = createTransientTicketService(venue);
     String customerEmailAddress = "customer@gmail.com";
 
     SeatHold seatHold = null;
@@ -178,22 +209,9 @@ public class StatefulTransientTicketServiceTest {
   }
 
   @Test
-  public void testReserveSeats() {
-    int rowCount = 10;
-    int seatCount = 10;
-    Venue venue = VenueFactory.createVenue(rowCount, seatCount, 4);
-
-    ComparatorBasedSeatLocatorService locatorService = new ComparatorBasedSeatLocatorService();
-    locatorService.setVenue(venue);
-    locatorService.setComparator(new RowPrioritizedSeatComparator());
-
-    ExpiringTransientSeatHoldingService holdingService = new ExpiringTransientSeatHoldingService();
-    holdingService.setVenue(venue);
-
-    StatefulTransientTicketService service = new StatefulTransientTicketService();
-    service.setVenue(venue);
-    service.setSeatLocator(locatorService);
-    service.setSeatHoldingService(holdingService);
+  public void testTransientReserveSeats() {
+    Venue venue = createVenue();
+    GenericTicketService service = createTransientTicketService(venue);
     String customerEmailAddress = "customer@gmail.com";
 
     SeatHold seatHold = null;
@@ -228,6 +246,6 @@ public class StatefulTransientTicketServiceTest {
     assertNotNull("confirmation code null", confirmationCode);
 
     // verify the hold was removed
-    assertEquals("seat hold not removed", 0, holdingService.getSeatHoldingCount());
+    assertEquals("seat hold not removed", 0, service.getSeatHoldingService().getSeatHoldCount());
   }
 }

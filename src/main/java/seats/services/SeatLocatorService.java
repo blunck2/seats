@@ -2,6 +2,7 @@ package seats.services;
 
 import java.util.List;
 import seats.model.Seat;
+import seats.model.Venue;
 
 
 /**
@@ -16,6 +17,20 @@ import seats.model.Seat;
  */
 public interface SeatLocatorService {
 
+  /**
+   * Sets the underlying venue upon which seats should be located
+   * @param venue the venue to search for seats
+   */
+  public void setVenue(Venue venue);
+
+  
+  /**
+   * Returns the underlying venue upon which seats should be located
+   * @param venue the venue to search for seats
+   */
+  public Venue getVenue();
+  
+  
   /**
    * Locates a fixed number of seats and returns them as a List<Seat>.
    * @return the best located seats

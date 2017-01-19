@@ -480,6 +480,24 @@ public class VenueTest {
     } catch (SeatUnavailableException e) {
       fail("failed to unhold seat");
     }
-    
+  }
+
+  @Test
+  public void testGetSeatCount() {
+    Venue venue = new Venue();
+
+    // verify an empty venue works
+    int actual = venue.getSeatCount();
+    assertEquals("incorrect number of seats", 0, actual);
+
+    // verify a single row venue works
+    venue = VenueFactory.createVenue(1, 10, 4);
+    actual = venue.getSeatCount();
+    assertEquals("incorrect number of seats", 10, actual);
+
+    // verify a multiple row venue works
+    venue = VenueFactory.createVenue(2, 10, 4);
+    actual = venue.getSeatCount();
+    assertEquals("incorrect number of seats", 20, actual);
   }
 }

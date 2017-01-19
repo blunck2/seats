@@ -20,27 +20,27 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
- * An implementation of the TransientTicketService that maintains the
- * state of SeatHold instances as seats are held, released, and reserved.
+ * An implementation of the TicketService that relies on an abstracted
+ * SeatLocatorService and SeatHoldingService.
  * </p>
  */
-public class StatefulTransientTicketService implements TransientTicketService {
+public class GenericTicketService implements TicketService {
   // the underlying venue
   private Venue venue;
 
   // locates the best seats
-  private SeatLocatorService seatLocator;
+  private SeatLocatorService seatLocatorService;
 
   // keeps track of the seats that are held
   private SeatHoldingService seatHoldingService;
 
-  private static Logger logger = Logger.getLogger(StatefulTransientTicketService.class);
+  private static Logger logger = Logger.getLogger(GenericTicketService.class);
 
   
   /**
    * Creates a StatefuleTransientTicketService
    */
-  public StatefulTransientTicketService() { }
+  public GenericTicketService() { }
 
   /**
    * Returns the Venue 
@@ -71,13 +71,15 @@ public class StatefulTransientTicketService implements TransientTicketService {
   /**
    * Returns the seat locator service
    */
-  public SeatLocatorService getSeatLocator() { return seatLocator; }
+  public SeatLocatorService getSeatLocatorService() {
+    return seatLocatorService;
+  }
 
   /**
    * Sets the seat locator service
    */
-  public void setSeatLocator(SeatLocatorService seatLocator) {
-    this.seatLocator = seatLocator;
+  public void setSeatLocatorService(SeatLocatorService seatLocatorService) {
+    this.seatLocatorService = seatLocatorService;
   }
 
   /**
@@ -116,7 +118,7 @@ public class StatefulTransientTicketService implements TransientTicketService {
     boolean seatsLocated = false;
     List<Seat> seatsToHold = new ArrayList<>();
     try {
-      List<Seat> locatedSeats = seatLocator.locateSeats(numSeats);
+      List<Seat> locatedSeats = seatLocatorService.locateSeats(numSeats);
       seatsToHold.addAll(locatedSeats);
       seatsLocated = true;
       seatHold.setStatus(SUCCESS);

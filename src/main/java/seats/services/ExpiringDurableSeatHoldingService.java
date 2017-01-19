@@ -19,6 +19,20 @@ import static seats.common.Messages.*;
 public class ExpiringDurableSeatHoldingService
   implements DurableSeatHoldingService {
 
+  // the venue in which the seats are held
+  private Venue venue;
+  
+
+  /**
+   * Returns the Venue in use
+   */
+  public Venue getVenue() { return venue; }
+
+  /**
+   * Sets the Venue to use
+   */
+  public void setVenue(Venue venue) { this.venue = venue; }
+  
 
   /**
    * @see SeatHoldingService#addSeatHold

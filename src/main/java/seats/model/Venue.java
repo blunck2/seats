@@ -89,6 +89,20 @@ public class Venue {
 
   
   /**
+   * Returns the total number of seats in the venue
+   */
+  public int getSeatCount() {
+    int totalSeats = 0;
+    
+    for (Row row : getRows()) {
+      totalSeats += row.getSeatCount();
+    }
+
+    return totalSeats;
+  }
+
+  
+  /**
    * Returns the seat at the rowNumber and seatNumber provided
    * @param rowNumber the row number of the seat
    * @param seatNumber the seat number of the seat
