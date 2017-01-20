@@ -19,6 +19,13 @@ import static seats.common.Messages.*;
  * A persistent seat holding service that auto-expires seat holdings after
  * a configurable amount of time.
  * </p>
+ *
+ * <p>
+ * TODO: Add periodic refresh of Venue based on a periodic query to 
+ * the mongo for the current set of held seats.  This would allow for 
+ * the SeatLocatorService to offer seats that were held (but not reserved)
+ * that have then expired.
+ * </p>
  */
 public class ExpiringDurableSeatHoldingService
   implements DurableSeatHoldingService {
