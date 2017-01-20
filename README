@@ -1,6 +1,15 @@
-Unit tests were the primary method for verifying the code works.  To run them
-ensure you have Java 8 and Maven 3.3.0 or higher installed.  To execute unit
-tests run the following command:
+Unit tests were the primary method for verifying the code works.  To
+run them ensure you have Java 8 and Maven 3.3.0 or higher installed.
+Also ensure you are running the latest Mongo and are listening on
+:27017.
+
+To start up Mongo run:
+
+$ mkdir ~/data
+$ ./mongod --dbpath=~/data
+
+
+To execute unit tests run the following command:
 
 $ mvn clean test
 
@@ -50,3 +59,16 @@ mitigated through java.util.concurrent classes or Mongo.  There is no
 assumption that all rows have the same number of seats.  The only
 assumption really is that rows with lower numbers are closer to the
 stage.
+
+
+Further Work
+
+Additional work is needed to connect the seats.web package to the
+services so they may be called restfully.  I was in the process of
+wiring that together when other work required me to pause.
+Additionally, since there is no callback on TTL expirations in Mongo I
+was going to implement (via a scheduled executor) a query to Mongo to
+return all current SeatHold instances and then refresh the content of
+the Venue.  That would allow the SeatLocatorService to consider seats
+that were held (but never reserved) and then freed.
+
