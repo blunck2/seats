@@ -69,6 +69,7 @@ public class ExpiringTransientSeatHoldingServiceTest {
     // create the ExpiringTransientSeatHoldingService
     ExpiringTransientSeatHoldingService service = new ExpiringTransientSeatHoldingService();
     service.setVenue(venue);
+    service.setExpirationTimeInMilliSeconds(1);
 
     // set a very short lookback period
     service.setExpirationTimeInMilliSeconds(1);
@@ -82,6 +83,11 @@ public class ExpiringTransientSeatHoldingServiceTest {
     // verify the getSeatHoldCount() method works
     int instanceCount = service.getSeatHoldCount();
     assertEquals("failed to add", 1, instanceCount);
+    try {
+      Thread.sleep(10);
+    } catch (InterruptedException e) {
+      fail("failed to sleep");
+    }
 
     // manually expire the holdings
     service.expireSeatHoldings();

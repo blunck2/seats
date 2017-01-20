@@ -3,6 +3,9 @@ package seats.model;
 import java.util.List;
 import java.util.ArrayList;
 
+import javax.persistence.Id;
+import static javax.persistence.GenerationType.*;
+
 import org.joda.time.DateTime;
 
 
@@ -14,6 +17,7 @@ import org.joda.time.DateTime;
  */
 public class SeatHold {
   // universely unique id of this hold
+  @Id
   private int id;
   
   // the number of seats to hold

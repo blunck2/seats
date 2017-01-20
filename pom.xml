@@ -43,9 +43,13 @@
       <version>${log4j.version}</version>
     </dependency>
     <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>${persistence-api.version}</version>
+    </dependency> 
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -53,16 +57,22 @@
       <artifactId>mockito-all</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
 
   <properties>
     <java.version>1.8</java.version>
     
-    <junit.version>4.8.1</junit.version>
     <commons-lang.version>2.6</commons-lang.version>
     <joda-time.version>2.1</joda-time.version>
     <log4j.version>2.7</log4j.version>
+    <persistence-api.version>1.0.2</persistence-api.version>
     <mockito.version>1.8.4</mockito.version>
   </properties>
   

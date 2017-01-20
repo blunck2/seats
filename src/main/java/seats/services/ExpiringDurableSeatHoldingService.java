@@ -7,6 +7,10 @@ import seats.model.Seat;
 import seats.model.SeatHold;
 import seats.model.SeatNotHeldException;
 
+import seats.dao.repositories.SeatHoldRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import static seats.common.Messages.*;
 
 
@@ -21,7 +25,17 @@ public class ExpiringDurableSeatHoldingService
 
   // the venue in which the seats are held
   private Venue venue;
-  
+
+  // the backing durable store
+  @Autowired
+  private SeatHoldRepository repository;
+
+
+  /**
+   * Creates an ExpiringDurableSeatHoldingService
+   */
+  public ExpiringDurableSeatHoldingService() { }
+        
 
   /**
    * Returns the Venue in use
@@ -32,13 +46,28 @@ public class ExpiringDurableSeatHoldingService
    * Sets the Venue to use
    */
   public void setVenue(Venue venue) { this.venue = venue; }
+
   
+  /**
+   * Return the SeatHoldRepository in use
+   */
+  public SeatHoldRepository getRepository() { return repository; }
+
+  /**
+   * Sets the SeatHoldRepository to use
+   */
+  public void setRepository(SeatHoldRepository repository) {
+    this.repository = repository;
+  }
+
 
   /**
    * @see SeatHoldingService#addSeatHold
    */
   public SeatHold addSeatHold(SeatHold holding) {
-    return holding;
+    long now = System.currentTimeMillis();
+    holding.setId(Long.valueOf(now).intValue());
+    return repository.save(holding);
   }
   
 
@@ -47,7 +76,13 @@ public class ExpiringDurableSeatHoldingService
    */
   public void removeSeatHoldById(int seatHoldId)
     throws NoSuchSeatHoldException {
+
+    SeatHold existing = repository.findById(seatHoldId);
+    if (existing == null) {
+      throw new NoSuchSeatHoldException(SEAT_HOLD_ID_UNKNOWN);
+    }
     
+    repository.delete(seatHoldId);
   }
 
   /**
@@ -55,7 +90,11 @@ public class ExpiringDurableSeatHoldingService
    */
   public SeatHold getSeatHoldById(int seatHoldId)
     throws NoSuchSeatHoldException {
-    SeatHold seatHold = new SeatHold();
+    SeatHold seatHold = repository.findById(seatHoldId);
+    if (seatHold == null) {
+      throw new NoSuchSeatHoldException(SEAT_HOLD_ID_UNKNOWN);
+    }
+
     return seatHold;
   }
 
@@ -64,7 +103,8 @@ public class ExpiringDurableSeatHoldingService
    * @see SeatHoldingService#getSeatHoldCount
    */
   public int getSeatHoldCount() {
-    return 0;
+    long count = repository.count();
+    return Long.valueOf(count).intValue();
   }
 
 }
